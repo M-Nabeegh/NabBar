@@ -75,29 +75,32 @@ Plug-ins. It adds these states for `codex`, `claude` and `commandcode`
 
 | State | Example |
 |---|---|
-| `left`, `used` | `80%`, `20%` |
-| `reset` | `Resets in 2h 39m` |
-| `summary` | `Claude` / `80% left` |
-| `level` | `green`, `yellow`, `red` or `depleted` |
-| `icon` | a meter image filled to the percent left, in the level's colour |
+| `left`, `used`, `reset` | `44%`, `56%`, `Resets in 34m` (the 5-hour window) |
+| `weekLeft`, `weekReset` | `80%`, `Resets Oct 5 at 9pm` |
+| `summary` | `Claude` / `5h 44% · 7d 80%` |
+| `level`, `weekLevel` | `green`, `yellow`, `red` or `depleted` |
+| `icon` | two bars, 5-hour and weekly, each filled to its percent left in its level's colour |
 
 Common setups:
 
 - Button text that follows the numbers: set the text to the `summary` state.
-- Button colour that follows the level: add the event "NabBar: Claude level", choose a value,
-  and change the button's background in that event.
+- Button colour that follows the level: add the event "NabBar: Claude level" (or "Claude weekly
+  level"), choose a value, and change the button's background in that event.
 - A live meter as the button icon: "Change icon from plugin state" with the `icon` state.
 - A refresh button: the action "Refresh NabBar now".
 
 ## iPhone
 
-NabBar can push your numbers to an iPhone through the third-party [Notify!](https://getnotifyapp.com)
-app, as a Lock Screen Live Activity and widgets.
+NabBar can push your numbers to an iPhone Home Screen widget through the third-party
+[Notify!](https://getnotifyapp.com) app. The widget shows one chip each for Claude and Codex, with
+the 5-hour and weekly windows side by side (`Claude 5h · 7d  44 · 80%`), so it fits the medium
+size. Which providers it shows is set by `NabBarNotifyProviders` in `Sources/App/Info.plist`.
 
-1. Install Notify! on the iPhone and open it once.
-2. Copy the device ID and device token from Notify!.
-3. In NabBar → Settings → Notify!, paste both, press Save Link, and turn on Publish to Notify!.
-4. Press Send Now to check it arrives.
+1. Install Notify! on the iPhone and turn on Settings → Home Screen Widgets in it.
+2. Copy the device link from Notify!.
+3. In NabBar → Settings → Notify!, paste the link, press Save Link, and turn on Publish to Notify!.
+   Leave only Home Screen widget switched on if you don't want a Live Activity.
+4. Add the Notify! widget from the iOS widget picker. iOS redraws it about every 15 minutes.
 
 ## What it reads and sends
 
