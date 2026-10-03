@@ -1,9 +1,9 @@
 import Foundation
 import ProjectDescription
 
-/// `TUIST_CLAUDEBAR_WITHOUT_AWS=1` leaves out AWSClients and the AWS SDK (a
-/// multi-gigabyte checkout). Only Bedrock uses them; ClaudeBar-Local hides it.
-let withoutAWS = ProcessInfo.processInfo.environment["TUIST_CLAUDEBAR_WITHOUT_AWS"] == "1"
+/// AWSClients and the AWS SDK (a multi-gigabyte checkout) are left out unless
+/// `TUIST_NABBAR_WITH_AWS=1`: only Bedrock uses them, and NabBar hides it.
+let withoutAWS = ProcessInfo.processInfo.environment["TUIST_NABBAR_WITH_AWS"] != "1"
 /// The AWS SDK products the test targets link alongside AWSClients.
 let awsSDKTestDependencies: [TargetDependency] = withoutAWS ? [] : [
     .external(name: "AWSCloudWatch"),

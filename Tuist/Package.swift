@@ -45,8 +45,8 @@ let package = Package(
         // republishing the components as a reusable library is not — fine for
         // consuming it here, so long as the source is never vendored.
         .package(url: "https://github.com/mana-am/matrix-swift", from: "0.2.0"),
-    ] + (ProcessInfo.processInfo.environment["TUIST_CLAUDEBAR_WITHOUT_AWS"] == "1" ? [] : [
-        // Only Bedrock (AWSClients) uses it; ClaudeBar-Local builds without it.
+    ] + (ProcessInfo.processInfo.environment["TUIST_NABBAR_WITH_AWS"] != "1" ? [] : [
+        // Only Bedrock (AWSClients) uses it; NabBar leaves it out unless TUIST_NABBAR_WITH_AWS=1.
         .package(url: "https://github.com/awslabs/aws-sdk-swift", exact: "1.6.99"),
     ])
 )
