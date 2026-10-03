@@ -59,7 +59,7 @@ public struct NotifyDeviceLink: Sendable, Equatable, Hashable {
     /// `/widgets/{id}?token=` forms, and falls back to treating the text as an
     /// id and token separated by whitespace, a comma, or a colon.
     public init?(pastedText: String) {
-        let text = pastedText.trimmingCharacters(in: .whitespacesAndNewlines)
+        let text = Self.unwrapped(pastedText)
         guard !text.isEmpty else { return nil }
 
         if let link = Self.fromURL(text) {
@@ -100,7 +100,7 @@ public struct NotifyDeviceLink: Sendable, Equatable, Hashable {
     /// stripped. For a settings pane with a field per value, half an answer is
     /// still worth having, so this fills in the half that is there.
     public static func deviceId(inPastedText text: String) -> String? {
-        let text = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        let text = unwrapped(text)
         guard !text.isEmpty else { return nil }
 
         if let identifier = identifier(inURL: text), isValidDeviceId(identifier) {
@@ -116,6 +116,14 @@ public struct NotifyDeviceLink: Sendable, Equatable, Hashable {
 
     /// The last non empty path segment of a URL, which is where every gateway
     /// route that carries an id puts it.
+    /// The pasted text without surrounding whitespace or the quotes, backticks
+    /// and angle brackets a copied command or chat message wraps a URL in.
+    /// Notify!'s own curl example ends its URL with `'`, which would otherwise
+    /// stay on the token.
+    private static func unwrapped(_ text: String) -> String {
+        text.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines.union(CharacterSet(charactersIn: "'\"`<>")))
+    }
+
     private static func identifier(inURL text: String) -> String? {
         guard let components = URLComponents(string: text), components.host != nil else {
             return nil

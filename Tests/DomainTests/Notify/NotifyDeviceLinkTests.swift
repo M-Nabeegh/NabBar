@@ -7,6 +7,20 @@ struct NotifyDeviceLinkTests {
 
     // MARK: - Pasted URLs
 
+    @Test(arguments: [
+        "'https://push.getnotifyapp.com/notify-json/ABCD1234?token=s3cr3t'",
+        "https://push.getnotifyapp.com/notify-json/ABCD1234?token=s3cr3t'",
+        "\"https://push.getnotifyapp.com/notify/ABCD1234?token=s3cr3t\"",
+        "<https://push.getnotifyapp.com/notify/ABCD1234?token=s3cr3t>",
+        "`https://push.getnotifyapp.com/notify/ABCD1234?token=s3cr3t`",
+    ])
+    func `quotes copied from Notify!'s curl example are not part of the token`(pasted: String) {
+        let link = NotifyDeviceLink(pastedText: pasted)
+
+        #expect(link?.deviceId == "ABCD1234")
+        #expect(link?.token == "s3cr3t")
+    }
+
     @Test
     func `a notification URL parses into an id and a token`() {
         // Given the URL the Notify! app puts on the clipboard
