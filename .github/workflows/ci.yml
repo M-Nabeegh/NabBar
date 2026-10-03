@@ -1,0 +1,74 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Build and test
+    runs-on: macos-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use the newest Xcode
+        run: |
+          xcode=$(ls -d /Applications/Xcode*.app | sort -V | tail -1)
+          sudo xcode-select -s "$xcode"
+          xcodebuild -version
+
+      - name: Install Tuist
+        run: brew install --quiet tuist
+
+      - name: Cache Swift packages
+        uses: actions/cache@v4
+        with:
+          path: Tuist/.build
+          key: spm-${{ hashFiles('Tuist/Package.swift', 'Tuist/Package.resolved') }}
+
+      - name: Generate the project
+        run: |
+          tuist install
+          tuist generate --no-open
+
+      - name: Run tests
+        run: |
+          status=0
+          xcodebuild test \
+            -workspace NabBar.xcworkspace \
+            -scheme NabBar-Workspace \
+            -destination 'platform=macOS,arch=arm64' \
+            -only-testing:ProvidersTests \
+            -only-testing:DomainTests \
+            -only-testing:DataSourcesTests \
+            -only-testing:InfrastructureTests \
+            -only-testing:AppTests \
+            CODE_SIGN_IDENTITY=- > test.log 2>&1 || status=$?
+          grep -E "Test run with|✘|error:|TEST (SUCCEEDED|FAILED)" test.log || tail -50 test.log
+          exit $status
+
+      - name: Upload the test log
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-log
+          path: test.log
+
+  touchportal:
+    name: Touch Portal plugin
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check the plugin
+        run: |
+          python3 -c "import json; json.load(open('integrations/touchportal/NabBar/entry.tp'))"
+          python3 -m py_compile integrations/touchportal/NabBar/plugin.py
+          cd integrations/touchportal/NabBar
+          python3 -c "import plugin; assert [plugin.level_for(p) for p in (80, 35, 10, 0)] == ['green', 'yellow', 'red', 'depleted']; plugin.meter_icon(50, 'yellow')"
