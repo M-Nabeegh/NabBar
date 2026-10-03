@@ -4,9 +4,11 @@
 Reads the status file NabBar exports (no network, no credentials) and pushes
 one set of states per provider over Touch Portal's local socket:
 
-  <id>.left / .used / .reset / .status / .summary   text
-  <id>.level    green, yellow, red or depleted — NabBar's own thresholds
-  <id>.icon     a base64 PNG meter, filled to the % left in the level's colour
+  <id>.left / .used / .reset    the first window (Claude and Codex: 5 hours)
+  <id>.weekLeft / .weekReset    the weekly window
+  <id>.level / .weekLevel       green, yellow, red or depleted (NabBar's thresholds)
+  <id>.status / .summary        text; summary reads "Claude\n5h 44% · 7d 80%"
+  <id>.icon                     a base64 PNG: one bar per window, filled to the % left
 
 "Refresh NabBar" asks NabBar to refresh through its nabbar://refresh URL.
 """
@@ -69,22 +71,31 @@ def png(width, height, pixel):
     return b"\x89PNG\r\n\x1a\n" + chunk(b"IHDR", header) + chunk(b"IDAT", zlib.compress(rows, 9)) + chunk(b"IEND", b"")
 
 
-def meter_icon(percent_left, level):
-    """A rounded slate tile filled from the bottom to the % left."""
-    size, radius = ICON_SIZE, 22
-    colour = LEVEL_COLOURS[level]
-    fill_top = size - round(size * max(0.0, min(100.0, percent_left or 0)) / 100)
-    track = tuple(round(c * 0.22 + 0x1E * 0.78) for c in colour)
+def meter_icon(*windows):
+    """Rounded bars side by side, one per (percent_left, level), each filled
+    from the bottom to its % left in its level's colour."""
+    size, gap = ICON_SIZE, 10
+    width = (size - gap * (len(windows) - 1)) // len(windows)
+    radius = min(22, width // 2)
+    bars = []
+    for i, (percent_left, level) in enumerate(windows):
+        colour = LEVEL_COLOURS[level]
+        bars.append((i * (width + gap), colour,
+                     size - round(size * max(0.0, min(100.0, percent_left or 0)) / 100),
+                     tuple(round(c * 0.22 + 0x1E * 0.78) for c in colour)))
 
-    def inside(x, y):
-        cx = min(max(x, radius), size - 1 - radius)
+    def inside(x0, x, y):
+        cx = min(max(x, x0 + radius), x0 + width - 1 - radius)
         cy = min(max(y, radius), size - 1 - radius)
         return (x - cx) ** 2 + (y - cy) ** 2 <= radius ** 2
 
     def pixel(x, y):
-        if not inside(x, y):
-            return (0, 0, 0, 0)
-        return (*colour, 255) if y >= fill_top else (*track, 255)
+        for x0, colour, fill_top, track in bars:
+            if x0 <= x < x0 + width:
+                if not inside(x0, x, y):
+                    return (0, 0, 0, 0)
+                return (*colour, 255) if y >= fill_top else (*track, 255)
+        return (0, 0, 0, 0)
 
     return base64.b64encode(png(size, size, pixel)).decode()
 
@@ -99,21 +110,38 @@ def read_status():
     return None
 
 
+def percent(value):
+    return f"{round(value)}%" if value is not None else "--"
+
+
+def summary_text(label, left, week):
+    """'Claude\n5h 44% · 7d 80%', or just the one window a provider has."""
+    if left is None:
+        return f"{label}\n--"
+    if week is None:
+        return f"{label}\n{round(left)}% left"
+    return f"{label}\n5h {round(left)}% · 7d {round(week)}%"
+
+
 def provider_states(status):
     by_id = {p.get("id"): p for p in (status or {}).get("providers", [])}
     states = {}
     for pid in PROVIDERS:
         p = by_id.get(pid, {})
         left, used = p.get("percentRemaining"), p.get("percentUsed")
-        level = level_for(left)
+        week = p.get("weeklyPercentRemaining")
+        level, week_level = level_for(left), level_for(week)
         label = p.get("name") or pid
-        states[state_id(pid, "left")] = f"{round(left)}%" if left is not None else "--"
-        states[state_id(pid, "used")] = f"{round(used)}%" if used is not None else "--"
+        states[state_id(pid, "left")] = percent(left)
+        states[state_id(pid, "used")] = percent(used)
         states[state_id(pid, "reset")] = p.get("resetText") or ""
+        states[state_id(pid, "weekLeft")] = percent(week)
+        states[state_id(pid, "weekReset")] = p.get("weeklyResetText") or ""
         states[state_id(pid, "status")] = p.get("status") or "unknown"
-        states[state_id(pid, "summary")] = f"{label}\n{round(left)}% left" if left is not None else f"{label}\n--"
+        states[state_id(pid, "summary")] = summary_text(label, left, week)
         states[state_id(pid, "level")] = level
-        states[state_id(pid, "icon")] = meter_icon(left, level)
+        states[state_id(pid, "weekLevel")] = week_level
+        states[state_id(pid, "icon")] = meter_icon((left, level), (week, week_level)) if week is not None else meter_icon((left, level))
     states[f"{PLUGIN_ID}.state.updatedAt"] = (status or {}).get("updatedAt", "")
     return states
 

@@ -1,6 +1,6 @@
 {
   "sdk": 6,
-  "version": 2,
+  "version": 3,
   "name": "NabBar",
   "id": "com.nabeegh.nabbar.touchportal",
   "configuration": {
@@ -39,6 +39,20 @@
           "valueStateId": "com.nabeegh.nabbar.touchportal.state.codex.level"
         },
         {
+          "id": "com.nabeegh.nabbar.touchportal.event.codex.weekLevel",
+          "name": "NabBar: Codex weekly level",
+          "format": "When Codex weekly level becomes $val",
+          "type": "communicate",
+          "valueType": "choice",
+          "valueChoices": [
+            "green",
+            "yellow",
+            "red",
+            "depleted"
+          ],
+          "valueStateId": "com.nabeegh.nabbar.touchportal.state.codex.weekLevel"
+        },
+        {
           "id": "com.nabeegh.nabbar.touchportal.event.claude.level",
           "name": "NabBar: Claude level",
           "format": "When Claude level becomes $val",
@@ -53,6 +67,20 @@
           "valueStateId": "com.nabeegh.nabbar.touchportal.state.claude.level"
         },
         {
+          "id": "com.nabeegh.nabbar.touchportal.event.claude.weekLevel",
+          "name": "NabBar: Claude weekly level",
+          "format": "When Claude weekly level becomes $val",
+          "type": "communicate",
+          "valueType": "choice",
+          "valueChoices": [
+            "green",
+            "yellow",
+            "red",
+            "depleted"
+          ],
+          "valueStateId": "com.nabeegh.nabbar.touchportal.state.claude.weekLevel"
+        },
+        {
           "id": "com.nabeegh.nabbar.touchportal.event.commandcode.level",
           "name": "NabBar: Command Code level",
           "format": "When Command Code level becomes $val",
@@ -65,25 +93,51 @@
             "depleted"
           ],
           "valueStateId": "com.nabeegh.nabbar.touchportal.state.commandcode.level"
+        },
+        {
+          "id": "com.nabeegh.nabbar.touchportal.event.commandcode.weekLevel",
+          "name": "NabBar: Command Code weekly level",
+          "format": "When Command Code weekly level becomes $val",
+          "type": "communicate",
+          "valueType": "choice",
+          "valueChoices": [
+            "green",
+            "yellow",
+            "red",
+            "depleted"
+          ],
+          "valueStateId": "com.nabeegh.nabbar.touchportal.state.commandcode.weekLevel"
         }
       ],
       "states": [
         {
           "id": "com.nabeegh.nabbar.touchportal.state.codex.left",
           "type": "text",
-          "desc": "NabBar: Codex % left",
+          "desc": "NabBar: Codex % left (5h)",
           "default": "--"
         },
         {
           "id": "com.nabeegh.nabbar.touchportal.state.codex.used",
           "type": "text",
-          "desc": "NabBar: Codex % used",
+          "desc": "NabBar: Codex % used (5h)",
           "default": "--"
         },
         {
           "id": "com.nabeegh.nabbar.touchportal.state.codex.reset",
           "type": "text",
-          "desc": "NabBar: Codex reset time",
+          "desc": "NabBar: Codex reset time (5h)",
+          "default": ""
+        },
+        {
+          "id": "com.nabeegh.nabbar.touchportal.state.codex.weekLeft",
+          "type": "text",
+          "desc": "NabBar: Codex % left (weekly)",
+          "default": "--"
+        },
+        {
+          "id": "com.nabeegh.nabbar.touchportal.state.codex.weekReset",
+          "type": "text",
+          "desc": "NabBar: Codex reset time (weekly)",
           "default": ""
         },
         {
@@ -95,37 +149,55 @@
         {
           "id": "com.nabeegh.nabbar.touchportal.state.codex.summary",
           "type": "text",
-          "desc": "NabBar: Codex summary (name + % left)",
+          "desc": "NabBar: Codex summary (name, 5h and weekly)",
           "default": ""
         },
         {
           "id": "com.nabeegh.nabbar.touchportal.state.codex.level",
           "type": "text",
-          "desc": "NabBar: Codex level (green / yellow / red / depleted)",
+          "desc": "NabBar: Codex level, 5h (green / yellow / red / depleted)",
+          "default": "unknown"
+        },
+        {
+          "id": "com.nabeegh.nabbar.touchportal.state.codex.weekLevel",
+          "type": "text",
+          "desc": "NabBar: Codex level, weekly (green / yellow / red / depleted)",
           "default": "unknown"
         },
         {
           "id": "com.nabeegh.nabbar.touchportal.state.codex.icon",
           "type": "text",
-          "desc": "NabBar: Codex meter icon (use with Change icon from plugin state)",
+          "desc": "NabBar: Codex meter icon, 5h and weekly bars (use with Change icon from plugin state)",
           "default": ""
         },
         {
           "id": "com.nabeegh.nabbar.touchportal.state.claude.left",
           "type": "text",
-          "desc": "NabBar: Claude % left",
+          "desc": "NabBar: Claude % left (5h)",
           "default": "--"
         },
         {
           "id": "com.nabeegh.nabbar.touchportal.state.claude.used",
           "type": "text",
-          "desc": "NabBar: Claude % used",
+          "desc": "NabBar: Claude % used (5h)",
           "default": "--"
         },
         {
           "id": "com.nabeegh.nabbar.touchportal.state.claude.reset",
           "type": "text",
-          "desc": "NabBar: Claude reset time",
+          "desc": "NabBar: Claude reset time (5h)",
+          "default": ""
+        },
+        {
+          "id": "com.nabeegh.nabbar.touchportal.state.claude.weekLeft",
+          "type": "text",
+          "desc": "NabBar: Claude % left (weekly)",
+          "default": "--"
+        },
+        {
+          "id": "com.nabeegh.nabbar.touchportal.state.claude.weekReset",
+          "type": "text",
+          "desc": "NabBar: Claude reset time (weekly)",
           "default": ""
         },
         {
@@ -137,37 +209,55 @@
         {
           "id": "com.nabeegh.nabbar.touchportal.state.claude.summary",
           "type": "text",
-          "desc": "NabBar: Claude summary (name + % left)",
+          "desc": "NabBar: Claude summary (name, 5h and weekly)",
           "default": ""
         },
         {
           "id": "com.nabeegh.nabbar.touchportal.state.claude.level",
           "type": "text",
-          "desc": "NabBar: Claude level (green / yellow / red / depleted)",
+          "desc": "NabBar: Claude level, 5h (green / yellow / red / depleted)",
+          "default": "unknown"
+        },
+        {
+          "id": "com.nabeegh.nabbar.touchportal.state.claude.weekLevel",
+          "type": "text",
+          "desc": "NabBar: Claude level, weekly (green / yellow / red / depleted)",
           "default": "unknown"
         },
         {
           "id": "com.nabeegh.nabbar.touchportal.state.claude.icon",
           "type": "text",
-          "desc": "NabBar: Claude meter icon (use with Change icon from plugin state)",
+          "desc": "NabBar: Claude meter icon, 5h and weekly bars (use with Change icon from plugin state)",
           "default": ""
         },
         {
           "id": "com.nabeegh.nabbar.touchportal.state.commandcode.left",
           "type": "text",
-          "desc": "NabBar: Command Code % left",
+          "desc": "NabBar: Command Code % left (5h)",
           "default": "--"
         },
         {
           "id": "com.nabeegh.nabbar.touchportal.state.commandcode.used",
           "type": "text",
-          "desc": "NabBar: Command Code % used",
+          "desc": "NabBar: Command Code % used (5h)",
           "default": "--"
         },
         {
           "id": "com.nabeegh.nabbar.touchportal.state.commandcode.reset",
           "type": "text",
-          "desc": "NabBar: Command Code reset time",
+          "desc": "NabBar: Command Code reset time (5h)",
+          "default": ""
+        },
+        {
+          "id": "com.nabeegh.nabbar.touchportal.state.commandcode.weekLeft",
+          "type": "text",
+          "desc": "NabBar: Command Code % left (weekly)",
+          "default": "--"
+        },
+        {
+          "id": "com.nabeegh.nabbar.touchportal.state.commandcode.weekReset",
+          "type": "text",
+          "desc": "NabBar: Command Code reset time (weekly)",
           "default": ""
         },
         {
@@ -179,19 +269,25 @@
         {
           "id": "com.nabeegh.nabbar.touchportal.state.commandcode.summary",
           "type": "text",
-          "desc": "NabBar: Command Code summary (name + % left)",
+          "desc": "NabBar: Command Code summary (name, 5h and weekly)",
           "default": ""
         },
         {
           "id": "com.nabeegh.nabbar.touchportal.state.commandcode.level",
           "type": "text",
-          "desc": "NabBar: Command Code level (green / yellow / red / depleted)",
+          "desc": "NabBar: Command Code level, 5h (green / yellow / red / depleted)",
+          "default": "unknown"
+        },
+        {
+          "id": "com.nabeegh.nabbar.touchportal.state.commandcode.weekLevel",
+          "type": "text",
+          "desc": "NabBar: Command Code level, weekly (green / yellow / red / depleted)",
           "default": "unknown"
         },
         {
           "id": "com.nabeegh.nabbar.touchportal.state.commandcode.icon",
           "type": "text",
-          "desc": "NabBar: Command Code meter icon (use with Change icon from plugin state)",
+          "desc": "NabBar: Command Code meter icon, 5h and weekly bars (use with Change icon from plugin state)",
           "default": ""
         },
         {

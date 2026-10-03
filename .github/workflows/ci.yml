@@ -71,4 +71,4 @@ jobs:
           python3 -c "import json; json.load(open('integrations/touchportal/NabBar/entry.tp'))"
           python3 -m py_compile integrations/touchportal/NabBar/plugin.py
           cd integrations/touchportal/NabBar
-          python3 -c "import plugin; assert [plugin.level_for(p) for p in (80, 35, 10, 0)] == ['green', 'yellow', 'red', 'depleted']; plugin.meter_icon(50, 'yellow')"
+          python3 -c "import plugin; assert [plugin.level_for(p) for p in (80, 35, 10, 0)] == ['green', 'yellow', 'red', 'depleted']; plugin.meter_icon((50, 'yellow'), (90, 'green'))"
