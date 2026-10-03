@@ -9,6 +9,8 @@ one set of states per provider over Touch Portal's local socket:
   <id>.level / .weekLevel       green, yellow, red or depleted (NabBar's thresholds)
   <id>.status / .summary        text; summary reads "Claude\n5h 44% · 7d 80%"
   <id>.icon                     a base64 PNG: one bar per window, filled to the % left
+  <id>.tile                     the finished button face NabBar draws (logo, name,
+                                5h large, weekly bar), from ~/.nabbar/tiles/<id>.png
 
 "Refresh NabBar" asks NabBar to refresh through its nabbar://refresh URL.
 """
@@ -27,6 +29,7 @@ REFRESH_ACTION = f"{PLUGIN_ID}.action.refresh"
 TP_HOST, TP_PORT = "127.0.0.1", 12136
 PROVIDERS = ["codex", "claude", "commandcode"]
 STATUS_FILES = [os.path.expanduser("~/.nabbar/status.json")]
+TILES = os.path.expanduser("~/.nabbar/tiles")
 POLL_SECONDS = 5
 RESEND_SECONDS = 60      # send every state again now and then, in case Touch Portal missed one
 
@@ -105,6 +108,14 @@ def meter_icon(*windows):
     return base64.b64encode(png(size, size, pixel)).decode()
 
 
+def read_tile(pid):
+    try:
+        with open(os.path.join(TILES, f"{pid}.png"), "rb") as f:
+            return base64.b64encode(f.read()).decode()
+    except OSError:
+        return ""
+
+
 def read_status():
     for path in STATUS_FILES:
         try:
@@ -147,6 +158,7 @@ def provider_states(status):
         states[state_id(pid, "level")] = level
         states[state_id(pid, "weekLevel")] = week_level
         states[state_id(pid, "icon")] = meter_icon((left, level), (week, week_level)) if week is not None else meter_icon((left, level))
+        states[state_id(pid, "tile")] = read_tile(pid)
     states[f"{PLUGIN_ID}.state.updatedAt"] = (status or {}).get("updatedAt", "")
     return states
 

@@ -1,6 +1,6 @@
 {
   "sdk": 6,
-  "version": 4,
+  "version": 5,
   "name": "NabBar",
   "id": "com.nabeegh.nabbar.touchportal",
   "configuration": {
@@ -294,6 +294,24 @@
           "id": "com.nabeegh.nabbar.touchportal.state.updatedAt",
           "type": "text",
           "desc": "NabBar: last updated",
+          "default": ""
+        },
+        {
+          "id": "com.nabeegh.nabbar.touchportal.state.codex.tile",
+          "type": "text",
+          "desc": "NabBar: Codex tile (finished button face; use with Change icon from plugin state)",
+          "default": ""
+        },
+        {
+          "id": "com.nabeegh.nabbar.touchportal.state.claude.tile",
+          "type": "text",
+          "desc": "NabBar: Claude tile (finished button face; use with Change icon from plugin state)",
+          "default": ""
+        },
+        {
+          "id": "com.nabeegh.nabbar.touchportal.state.commandcode.tile",
+          "type": "text",
+          "desc": "NabBar: Command Code tile (finished button face; use with Change icon from plugin state)",
           "default": ""
         }
       ]

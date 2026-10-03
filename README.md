@@ -80,13 +80,15 @@ Plug-ins. It adds these states for `codex`, `claude` and `commandcode`
 | `summary` | `Claude` / `5h 44% · 7d 80%` |
 | `level`, `weekLevel` | `green`, `yellow`, `red` or `depleted` |
 | `icon` | two bars along the bottom, 5-hour and weekly, each filled to its percent left in its level's colour; the top is left clear for button text |
+| `tile` | a finished button face NabBar draws: logo, name, the 5-hour percentage large in its colour, reset time and a weekly bar |
 
 Common setups:
 
 - Button text that follows the numbers: set the text to the `summary` state.
 - Button colour that follows the level: add the event "NabBar: Claude level" (or "Claude weekly
   level"), choose a value, and change the button's background in that event.
-- A live meter as the button icon: "Change icon from plugin state" with the `icon` state.
+- A finished, designed button: "Change icon from plugin state" with the `tile` state, and no button text.
+- A simple live meter instead: the same with the `icon` state.
 - A refresh button: the action "Refresh NabBar now".
 
 ## iPhone
