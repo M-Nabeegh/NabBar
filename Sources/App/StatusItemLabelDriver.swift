@@ -301,7 +301,7 @@ final class StatusItemLabelDriver {
         let tooltip = settings.shown(([primaryText].filter { !$0.isEmpty } + content.additionalLabels.map(\.text))
             .joined(separator: " | "))
         button.toolTip = tooltip.isEmpty ? nil : tooltip
-        button.setAccessibilityLabel(tooltip.isEmpty ? "ClaudeBar" : tooltip)
+        button.setAccessibilityLabel(tooltip.isEmpty ? "NabBar" : tooltip)
     }
 
     private func resolvedTheme(for content: LabelContent) -> any AppThemeProvider {
@@ -652,6 +652,11 @@ final class StatusItemLabelDriver {
     /// menu-bar provider when a menu-bar readout is on; otherwise just the
     /// selected provider. Disabled providers are dropped (issue #67).
     private var backgroundRefreshProviderIds: [String]? {
+        // A lineup is a handful of providers, and the status file and Touch
+        // Portal show all of them, so every enabled one in it stays fresh.
+        if let lineup = AppProfile.providerLineup {
+            return AppProfile.arrange(monitor.enabledProviders.map(\.id), id: { $0 }, lineup: lineup)
+        }
         guard settings.menuBarPercentageEnabled || settings.menuBarDurationEnabled else { return nil }
         let enabledProviderIds = Set(monitor.enabledProviders.map(\.id))
         var seen = Set<String>()
