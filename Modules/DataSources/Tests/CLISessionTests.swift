@@ -84,7 +84,7 @@ struct CLISessionTests {
 
     private func session() -> CLICall.Session {
         CLICall.Session(
-            create: ["--session-id", "{{id}}", "--name", "ClaudeBar Probe"],
+            create: ["--session-id", "{{id}}", "--name", "NabBar Probe"],
             resume: ["--resume", "{{id}}"],
             recreateOn: ["no conversation found", "no session found"],
             unsupportedOn: ["unknown option '--session-id'", "unknown option '--resume'", "unknown option '--name'"]
@@ -97,14 +97,14 @@ struct CLISessionTests {
     func `a session block decodes with its templates and tokens`() throws {
         let call = try JSONDecoder().decode(CLICall.self, from: Data("""
         {"cli":"claude","args":["/usage"],
-         "session":{"create":["--session-id","{{id}}","--name","ClaudeBar Probe"],
+         "session":{"create":["--session-id","{{id}}","--name","NabBar Probe"],
                     "resume":["--resume","{{id}}"],
                     "recreateOn":["no conversation found"],
                     "unsupportedOn":["unknown option '--session-id'"]}}
         """.utf8))
 
         let session = try #require(call.session)
-        #expect(session.create == ["--session-id", "{{id}}", "--name", "ClaudeBar Probe"])
+        #expect(session.create == ["--session-id", "{{id}}", "--name", "NabBar Probe"])
         #expect(session.resume == ["--resume", "{{id}}"])
         #expect(session.recreateOn == ["no conversation found"])
         #expect(session.unsupportedOn == ["unknown option '--session-id'"])
@@ -155,7 +155,7 @@ struct CLISessionTests {
 
         #expect(result.output == usageScreen)
         #expect(launches.recorded.count == 1)
-        #expect(launches.recorded[0] == ["/usage", "--allowed-tools", "", "--session-id", "11111111-2222-3333-4444-555555555555", "--name", "ClaudeBar Probe"])
+        #expect(launches.recorded[0] == ["/usage", "--allowed-tools", "", "--session-id", "11111111-2222-3333-4444-555555555555", "--name", "NabBar Probe"])
         #expect(await memory.id == "11111111-2222-3333-4444-555555555555")
     }
 
@@ -204,7 +204,37 @@ struct CLISessionTests {
         #expect(result.output == usageScreen)
         #expect(launches.recorded.count == 2)
         #expect(launches.recorded[0].contains("--resume"))
-        #expect(launches.recorded[1] == ["/usage", "--allowed-tools", "", "--session-id", "11111111-2222-3333-4444-555555555555", "--name", "ClaudeBar Probe"])
+        #expect(launches.recorded[1] == ["/usage", "--allowed-tools", "", "--session-id", "11111111-2222-3333-4444-555555555555", "--name", "NabBar Probe"])
+        #expect(await memory.id == "11111111-2222-3333-4444-555555555555")
+    }
+
+    @Test
+    func `a vanished session is recreated when the CLI places its words with cursor moves`() async throws {
+        // Claude Code 2.1.x, captured: each word is put at its column with a
+        // cursor jump, so the phrase is never in the output as plain text.
+        let launches = Launches()
+        let executor = MockCLIExecutor()
+        let gone = "\u{1B}[?2004lNo\u{1B}[4Gconversation\u{1B}[17Gfound\u{1B}[23Gwith\u{1B}[28Gsession\u{1B}[36GID:\u{1B}[40Gaaaaaaaa\n\n\u{1B}[?25h"
+        given(executor).execute(
+            binary: .any, args: .any, input: .any, timeout: .any, workingDirectory: .any, autoResponses: .any
+        ).willProduce { @Sendable _, args, _, _, _, _ in
+            launches.record(args)
+            return args.contains("--resume") ? CLIResult(output: gone, exitCode: 1) : CLIResult(output: usageScreen, exitCode: 0)
+        }
+        let memory = SessionMemory()
+        await memory.remember("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee")
+        let runner = self.runner(
+            call(session: session()),
+            executor: executor,
+            ids: ["11111111-2222-3333-4444-555555555555"],
+            memory: memory
+        )
+
+        let result = try await runner.run()
+
+        #expect(result.output == usageScreen)
+        #expect(launches.recorded.count == 2)
+        #expect(launches.recorded[1].contains("--session-id"))
         #expect(await memory.id == "11111111-2222-3333-4444-555555555555")
     }
 
@@ -309,6 +339,7 @@ struct CLISessionTests {
         #expect(CLISessionRunner.isGone("No Conversation Found With Session ID x", tokens: ["no conversation found"]))
         #expect(CLISessionRunner.isGone("all good", tokens: ["no conversation found"]) == false)
         #expect(CLISessionRunner.isGone("all good", tokens: []) == false)
+        #expect(CLISessionRunner.isGone("No\u{1B}[4Gconversation\u{1B}[17Gfound", tokens: ["no conversation found"]))
     }
 
     // MARK: - The memory
@@ -338,7 +369,7 @@ struct CLISessionTests {
         screen(usageScreen, executor: executor, launches: launches)
         let fetcher = CLIFetcher(
             call: call(session: CLICall.Session(
-                create: ["--session-id", "{{id}}", "--name", "ClaudeBar Probe"],
+                create: ["--session-id", "{{id}}", "--name", "NabBar Probe"],
                 resume: ["--resume", "{{id}}"],
                 recreateOn: [],
                 unsupportedOn: []

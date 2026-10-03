@@ -127,6 +127,17 @@ struct CLISessionRunner: Sendable {
     }
 
     private static func matches(_ output: String, tokens: [String]) -> Bool {
-        !tokens.isEmpty && tokens.contains { output.localizedCaseInsensitiveContains($0) }
+        guard !tokens.isEmpty else { return false }
+        let text = readable(output)
+        return tokens.contains { text.localizedCaseInsensitiveContains($0) }
+    }
+
+    /// The output as words: a TUI places each word with a cursor move
+    /// (`No␛[4Gconversation␛[17Gfound`, Claude Code 2.1.x), so every escape
+    /// sequence becomes a space and runs of spaces collapse to one.
+    private static func readable(_ output: String) -> String {
+        output
+            .replacingOccurrences(of: "\u{1B}\\[[0-9;?>=]*[ -/]*[@-~]", with: " ", options: .regularExpression)
+            .replacingOccurrences(of: "[ \\t]+", with: " ", options: .regularExpression)
     }
 }
