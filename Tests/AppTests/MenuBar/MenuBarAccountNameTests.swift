@@ -1,5 +1,5 @@
 import Testing
-@testable import ClaudeBar
+@testable import NabBar
 
 /// The few characters beside a provider's icon in the menu bar that say which
 /// of its logins a number belongs to. Full names stay in the tooltip; a short

@@ -20,7 +20,7 @@ extension Notification.Name {
 }
 
 @main
-struct ClaudeBarApp: App {
+struct NabBarApp: App {
     /// A built-in provider from its bundled definition. A definition that fails
     /// to load is a packaging bug the catalog tests catch before release.
     @MainActor

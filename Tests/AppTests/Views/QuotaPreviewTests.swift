@@ -1,7 +1,7 @@
 import Domain
 import Foundation
 import Testing
-@testable import ClaudeBar
+@testable import NabBar
 
 /// Map fields' live card speaks the popover's words.
 @Suite

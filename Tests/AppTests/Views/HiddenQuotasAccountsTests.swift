@@ -3,7 +3,7 @@ import Foundation
 import Infrastructure
 import Providers
 import Testing
-@testable import ClaudeBar
+@testable import NabBar
 
 /// Hidden quotas belong to the product (#140): Gemini's models are the same
 /// for every Gemini login, so hiding one hides it for all of them.

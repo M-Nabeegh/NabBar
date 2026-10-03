@@ -1,7 +1,7 @@
 import Testing
 import AppKit
 import Domain
-@testable import ClaudeBar
+@testable import NabBar
 
 /// *Show Account Labels in Menu Bar* off: the short account names beside the
 /// icons go, and the icons and quotas stay exactly where they were (#365).

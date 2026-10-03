@@ -1,6 +1,6 @@
 import SwiftUI
 import Testing
-@testable import ClaudeBar
+@testable import NabBar
 
 /// Pop: cream paper, thick ink outlines, hard offset shadows, candy status
 /// colours with ink text on them, and big numbers in Lilita One. Every

@@ -3,7 +3,7 @@ import Domain
 import Foundation
 import Providers
 import Testing
-@testable import ClaudeBar
+@testable import NabBar
 
 /// The words of Settings' Data source section, from a definition — so a
 /// provider that is data needs no card of its own.

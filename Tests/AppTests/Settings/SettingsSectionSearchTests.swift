@@ -1,5 +1,5 @@
 import Testing
-@testable import ClaudeBar
+@testable import NabBar
 
 @Suite
 struct SettingsSectionSearchTests {

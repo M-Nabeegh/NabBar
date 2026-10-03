@@ -2,7 +2,7 @@ import DataSources
 import Domain
 import Foundation
 import Testing
-@testable import ClaudeBar
+@testable import NabBar
 
 /// What the popover prints about a refresh: which data source answered, and
 /// which step failed — because each sends the person somewhere different

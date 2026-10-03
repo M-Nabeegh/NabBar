@@ -5,7 +5,7 @@ import Infrastructure
 import Providers
 import Quotas
 import Testing
-@testable import ClaudeBar
+@testable import NabBar
 
 /// The popover's pills are products: a provider's logins share one tab, in
 /// the order the person gave them, and ⌘1 is the first tab.

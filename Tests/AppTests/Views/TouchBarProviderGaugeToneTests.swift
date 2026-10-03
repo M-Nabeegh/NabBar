@@ -1,7 +1,7 @@
 import Testing
 import Foundation
 import Domain
-@testable import ClaudeBar
+@testable import NabBar
 
 /// The Touch Bar gauge draws the same number the menu bar does (remaining or used,
 /// per the display mode), but its colour must follow the quota's status, which is

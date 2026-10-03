@@ -1,6 +1,6 @@
 import SwiftUI
 import Testing
-@testable import ClaudeBar
+@testable import NabBar
 
 /// The faces of Claude and Codex now come from their definitions; these are
 /// the exact colours, symbols, icons and names the old `switch id` tables gave.

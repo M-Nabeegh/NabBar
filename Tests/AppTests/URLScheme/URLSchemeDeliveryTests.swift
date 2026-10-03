@@ -1,6 +1,6 @@
 import Testing
 import AppKit
-@testable import ClaudeBar
+@testable import NabBar
 
 /// The app delegate is the one object guaranteed to exist when a
 /// `claudebar://` URL arrives, including when the URL is what launched the

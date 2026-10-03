@@ -1,7 +1,7 @@
 import Testing
 import AppKit
 import Domain
-@testable import ClaudeBar
+@testable import NabBar
 
 /// *Show Provider Logo*: a single readout can start with its provider's
 /// logo too. Off by default — one readout has nothing to tell apart — and

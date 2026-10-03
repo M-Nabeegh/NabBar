@@ -1,6 +1,6 @@
 import Testing
 import Foundation
-@testable import ClaudeBar
+@testable import NabBar
 
 @Suite
 struct URLSchemeActionTests {

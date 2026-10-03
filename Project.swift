@@ -15,7 +15,7 @@ let awsSDKTestDependencies: [TargetDependency] = withoutAWS ? [] : [
 ]
 
 let project = Project(
-    name: "ClaudeBar",
+    name: "NabBar",
     options: .options(
         defaultKnownRegions: ["en"],
         developmentRegion: "en"
@@ -245,7 +245,7 @@ let project = Project(
 
         // MARK: - Main Application
         .target(
-            name: "ClaudeBar",
+            name: "NabBar",
             destinations: .macOS,
             product: .app,
             bundleId: "com.tddworks.claudebar",
@@ -334,7 +334,7 @@ let project = Project(
             deploymentTargets: .macOS("15.0"),
             sources: ["Tests/AppTests/**"],
             dependencies: [
-                .target(name: "ClaudeBar"),
+                .target(name: "NabBar"),
                 .target(name: "Domain"),
                 .target(name: "Infrastructure"),
             ]
@@ -364,9 +364,9 @@ let project = Project(
     ].filter { !withoutAWS || !$0.name.hasPrefix("AWSClients") },
     schemes: [
         .scheme(
-            name: "ClaudeBar",
+            name: "NabBar",
             shared: true,
-            buildAction: .buildAction(targets: ["ClaudeBar"]),
+            buildAction: .buildAction(targets: ["NabBar"]),
             testAction: .targets(
                 [
                     .testableTarget(target: .target("AcceptanceTests")),
@@ -378,9 +378,9 @@ let project = Project(
                 ] + (withoutAWS ? [] : [.testableTarget(target: .target("AWSClientsTests"))]),
                 configuration: .debug
             ),
-            runAction: .runAction(configuration: .debug, executable: .target("ClaudeBar")),
+            runAction: .runAction(configuration: .debug, executable: .target("NabBar")),
             archiveAction: .archiveAction(configuration: .release),
-            profileAction: .profileAction(configuration: .release, executable: .target("ClaudeBar")),
+            profileAction: .profileAction(configuration: .release, executable: .target("NabBar")),
             analyzeAction: .analyzeAction(configuration: .debug)
         ),
     ]

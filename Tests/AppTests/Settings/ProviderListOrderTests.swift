@@ -1,5 +1,5 @@
 import Testing
-@testable import ClaudeBar
+@testable import NabBar
 
 /// Settings → Providers lists the providers a person turned on first, so the
 /// one that matters isn't at the bottom of 21 rows (#141). The order is taken

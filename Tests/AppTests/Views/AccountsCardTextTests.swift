@@ -4,7 +4,7 @@ import Foundation
 import Infrastructure
 import Providers
 import Testing
-@testable import ClaudeBar
+@testable import NabBar
 
 /// The words of the Accounts card, from the definition — so every provider
 /// that can have accounts gets the same card with no `switch` on its id.

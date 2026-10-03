@@ -1,7 +1,7 @@
 import Testing
 import AppKit
 import Domain
-@testable import ClaudeBar
+@testable import NabBar
 
 @Suite @MainActor
 struct MenuBarNativeIconsTests {

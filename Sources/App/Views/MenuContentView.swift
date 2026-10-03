@@ -170,7 +170,7 @@ struct MenuContentView: View {
         .onChange(of: selectedProviderId) { _, newProviderId in
             // Refresh immediately when the user switches provider while the
             // dropdown is open. Periodic background refresh is owned by the
-            // app-lifetime loop in ClaudeBarApp, which restarts itself when the
+            // app-lifetime loop in NabBarApp, which restarts itself when the
             // selected or menu-bar provider changes.
             Task {
                 await refresh(providerId: newProviderId)

@@ -28,7 +28,7 @@ struct QuotaMonitorProviderOrderTests {
         return mock
     }
 
-    /// Registration order [claude, codex, gemini], as ClaudeBarApp registers them.
+    /// Registration order [claude, codex, gemini], as NabBarApp registers them.
     /// Every provider is definition-driven since #329, so these tests use the
     /// shared id/name stubs; only the monitor's ordering matters here.
     private func makeProviders(settings: any ProviderSettingsRepository) -> AIProviders {

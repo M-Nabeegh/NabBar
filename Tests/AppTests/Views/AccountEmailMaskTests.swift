@@ -1,5 +1,5 @@
 import Testing
-@testable import ClaudeBar
+@testable import NabBar
 
 /// *Hide account email* (#375): an email shows as its first letters with
 /// the rest masked, so a screen share or screenshot doesn't give it away;

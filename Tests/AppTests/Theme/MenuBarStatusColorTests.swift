@@ -1,7 +1,7 @@
 import Domain
 import SwiftUI
 import Testing
-@testable import ClaudeBar
+@testable import NabBar
 
 /// The menu bar is the system's light or dark strip, so status text there
 /// must read on both. Pop's candy pastels vanish on a light menu bar, so it
