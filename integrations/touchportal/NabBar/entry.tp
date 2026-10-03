@@ -1,11 +1,11 @@
 {
   "sdk": 6,
-  "version": 1,
+  "version": 2,
   "name": "NabBar",
   "id": "com.nabeegh.nabbar.touchportal",
   "configuration": {
-    "colorDark": "#2B2D31",
-    "colorLight": "#8A8F98"
+    "colorDark": "#1E2125",
+    "colorLight": "#4FE3A6"
   },
   "plugin_start_cmd_mac": "/usr/bin/python3 \"%TP_PLUGIN_FOLDER%NabBar/plugin.py\"",
   "plugin_start_cmd": "/usr/bin/python3 \"%TP_PLUGIN_FOLDER%NabBar/plugin.py\"",
@@ -13,8 +13,60 @@
     {
       "id": "com.nabeegh.nabbar.touchportal.cat",
       "name": "NabBar",
-      "actions": [],
-      "events": [],
+      "actions": [
+        {
+          "id": "com.nabeegh.nabbar.touchportal.action.refresh",
+          "name": "Refresh NabBar",
+          "prefix": "NabBar",
+          "type": "communicate",
+          "tryInline": true,
+          "format": "Refresh NabBar now"
+        }
+      ],
+      "events": [
+        {
+          "id": "com.nabeegh.nabbar.touchportal.event.codex.level",
+          "name": "NabBar: Codex level",
+          "format": "When Codex level becomes $val",
+          "type": "communicate",
+          "valueType": "choice",
+          "valueChoices": [
+            "green",
+            "yellow",
+            "red",
+            "depleted"
+          ],
+          "valueStateId": "com.nabeegh.nabbar.touchportal.state.codex.level"
+        },
+        {
+          "id": "com.nabeegh.nabbar.touchportal.event.claude.level",
+          "name": "NabBar: Claude level",
+          "format": "When Claude level becomes $val",
+          "type": "communicate",
+          "valueType": "choice",
+          "valueChoices": [
+            "green",
+            "yellow",
+            "red",
+            "depleted"
+          ],
+          "valueStateId": "com.nabeegh.nabbar.touchportal.state.claude.level"
+        },
+        {
+          "id": "com.nabeegh.nabbar.touchportal.event.commandcode.level",
+          "name": "NabBar: Command Code level",
+          "format": "When Command Code level becomes $val",
+          "type": "communicate",
+          "valueType": "choice",
+          "valueChoices": [
+            "green",
+            "yellow",
+            "red",
+            "depleted"
+          ],
+          "valueStateId": "com.nabeegh.nabbar.touchportal.state.commandcode.level"
+        }
+      ],
       "states": [
         {
           "id": "com.nabeegh.nabbar.touchportal.state.codex.left",
@@ -44,6 +96,18 @@
           "id": "com.nabeegh.nabbar.touchportal.state.codex.summary",
           "type": "text",
           "desc": "NabBar: Codex summary (name + % left)",
+          "default": ""
+        },
+        {
+          "id": "com.nabeegh.nabbar.touchportal.state.codex.level",
+          "type": "text",
+          "desc": "NabBar: Codex level (green / yellow / red / depleted)",
+          "default": "unknown"
+        },
+        {
+          "id": "com.nabeegh.nabbar.touchportal.state.codex.icon",
+          "type": "text",
+          "desc": "NabBar: Codex meter icon (use with Change icon from plugin state)",
           "default": ""
         },
         {
@@ -77,6 +141,18 @@
           "default": ""
         },
         {
+          "id": "com.nabeegh.nabbar.touchportal.state.claude.level",
+          "type": "text",
+          "desc": "NabBar: Claude level (green / yellow / red / depleted)",
+          "default": "unknown"
+        },
+        {
+          "id": "com.nabeegh.nabbar.touchportal.state.claude.icon",
+          "type": "text",
+          "desc": "NabBar: Claude meter icon (use with Change icon from plugin state)",
+          "default": ""
+        },
+        {
           "id": "com.nabeegh.nabbar.touchportal.state.commandcode.left",
           "type": "text",
           "desc": "NabBar: Command Code % left",
@@ -104,6 +180,18 @@
           "id": "com.nabeegh.nabbar.touchportal.state.commandcode.summary",
           "type": "text",
           "desc": "NabBar: Command Code summary (name + % left)",
+          "default": ""
+        },
+        {
+          "id": "com.nabeegh.nabbar.touchportal.state.commandcode.level",
+          "type": "text",
+          "desc": "NabBar: Command Code level (green / yellow / red / depleted)",
+          "default": "unknown"
+        },
+        {
+          "id": "com.nabeegh.nabbar.touchportal.state.commandcode.icon",
+          "type": "text",
+          "desc": "NabBar: Command Code meter icon (use with Change icon from plugin state)",
           "default": ""
         },
         {
