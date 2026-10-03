@@ -388,4 +388,36 @@ struct NotifyPayloadBuilderTests {
         #expect(oneWay == ["omp-home", "omp-work"])
     }
 
+
+    // MARK: - One chip per provider (a medium widget shows two chips)
+
+    @Test
+    func `paired windows put each provider's 5h and 7d in one chip, in the given order`() {
+        let paired = NotifyPayloadBuilder(pairsWindowsByProvider: true)
+        let readings = [
+            reading(44, provider: "claude", name: "Claude", quotaType: .session),
+            reading(80, provider: "claude", name: "Claude", quotaType: .weekly),
+            reading(63, provider: "codex", name: "Codex", quotaType: .session),
+            reading(90, provider: "codex", name: "Codex", quotaType: .weekly),
+        ]
+
+        let metrics = paired.payload(readings: readings).screenTile?.metrics ?? []
+
+        #expect(metrics.map(\.label) == ["Claude 5h · 7d", "Codex 5h · 7d"])
+        #expect(metrics.map(\.value) == ["44 · 80", "63 · 90"])
+        #expect(metrics.map(\.unit) == ["%", "%"])
+        #expect(metrics[0].tintHex == QuotaStatus.warning.notifyTintHex)
+        #expect(metrics[1].tintHex == QuotaStatus.healthy.notifyTintHex)
+    }
+
+    @Test
+    func `a lone provider's chip still names it`() {
+        let paired = NotifyPayloadBuilder(pairsWindowsByProvider: true)
+
+        let metrics = paired.payload(readings: [reading(63, provider: "codex", name: "Codex", quotaType: .session)])
+            .screenTile?.metrics ?? []
+
+        #expect(metrics.map(\.label) == ["Codex 5h"])
+        #expect(metrics.map(\.value) == ["63"])
+    }
 }

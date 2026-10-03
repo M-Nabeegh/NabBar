@@ -30,9 +30,14 @@ public struct NotifyPayloadBuilder: Sendable {
     public static let defaultTitle = "NabBar"
 
     private let title: String
+    /// One chip per provider holding its 5h and 7d windows, in the order the
+    /// readings come in, instead of one chip per window, worst first. A medium
+    /// Home Screen widget draws two chips, so two providers fit with both windows.
+    private let pairsWindowsByProvider: Bool
 
-    public init(title: String = NotifyPayloadBuilder.defaultTitle) {
+    public init(title: String = NotifyPayloadBuilder.defaultTitle, pairsWindowsByProvider: Bool = false) {
         self.title = title
+        self.pairsWindowsByProvider = pairsWindowsByProvider
     }
 
     public func payload(
@@ -51,7 +56,7 @@ public struct NotifyPayloadBuilder: Sendable {
         // could only produce two things that were supposed to be identical and
         // one day were not.
         let tile = (includesTile || includesScreenTile)
-            ? self.tile(ordered: ordered, headline: headline, policy: statusPolicy)
+            ? self.tile(readings: readings, ordered: ordered, headline: headline, policy: statusPolicy)
             : nil
 
         return NotifyPayload(
@@ -89,9 +94,16 @@ public struct NotifyPayloadBuilder: Sendable {
 
     // MARK: - Tile
 
-    private func tile(ordered: [NotifyQuotaReading], headline: NotifyQuotaReading, policy: StatusPolicy) -> NotifyTile? {
+    private func tile(
+        readings: [NotifyQuotaReading],
+        ordered: [NotifyQuotaReading],
+        headline: NotifyQuotaReading,
+        policy: StatusPolicy
+    ) -> NotifyTile? {
         let omitsProviderName = Set(ordered.map(\.providerId)).count == 1
-        let metrics = ordered
+        let metrics = pairsWindowsByProvider
+            ? Self.pairedMetrics(readings, policy: policy)
+            : ordered
             .prefix(NotifyLimits.metricCount)
             .compactMap { reading in
                 NotifyMetric(
@@ -111,6 +123,30 @@ public struct NotifyPayloadBuilder: Sendable {
             trailing: headline.quota.compactResetTime,
             metrics: metrics
         )
+    }
+
+    /// "Claude 5h · 7d" / "44 · 80" %, tinted by the worse of the two windows.
+    /// Providers keep the order they arrive in; within one, 5h comes before 7d.
+    /// The name always stays: a chip is a provider, even while it is the only
+    /// one that has loaded.
+    static func pairedMetrics(_ readings: [NotifyQuotaReading], policy: StatusPolicy) -> [NotifyMetric] {
+        var providerIds: [String] = []
+        for reading in readings where !providerIds.contains(reading.providerId) {
+            providerIds.append(reading.providerId)
+        }
+        return providerIds.prefix(NotifyLimits.metricCount).compactMap { providerId in
+            let mine = readings.filter { $0.providerId == providerId && !$0.quota.isDollarBased }
+            let windows = [QuotaType.session, .weekly].compactMap { type in mine.first { $0.quota.quotaType == type } }
+            guard let first = windows.first else { return nil }
+            let worst = windows.map { $0.quota.status(under: policy) }.max() ?? .healthy
+            let window = windows.map { Self.windowLabel(for: $0.quota) }.joined(separator: " · ")
+            return NotifyMetric(
+                label: "\(first.providerName) \(window)",
+                value: windows.map { Self.headlineValue(for: $0.quota) }.joined(separator: " · "),
+                unit: "%",
+                tintHex: worst.notifyTintHex
+            )
+        }
     }
 
     // MARK: - Gauge
