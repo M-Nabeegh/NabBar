@@ -36,8 +36,25 @@ APP="$OUT/$APP_NAME.app"
 rm -rf "$APP"
 ditto "$OUT/DerivedData/Build/Products/Release/$APP_NAME.app" "$APP"
 
-echo "==> Ad-hoc signing"
-codesign --force --deep --sign - \
+# Ad-hoc signatures change with every build, so macOS asks again for NabBar's
+# Keychain item after each one. A stable identity makes one "Always Allow"
+# last across rebuilds. In order: $NABBAR_SIGN_IDENTITY, a self-signed
+# "NabBar Local" certificate, the Mac's Apple Development certificate, ad hoc.
+identities=$(security find-identity -p codesigning 2>/dev/null)
+if [[ -n "${NABBAR_SIGN_IDENTITY:-}" ]]; then
+  SIGN_IDENTITY="$NABBAR_SIGN_IDENTITY"
+elif grep -q '"NabBar Local"' <<<"$identities"; then
+  SIGN_IDENTITY="NabBar Local"
+else
+  SIGN_IDENTITY=$(security find-identity -v -p codesigning 2>/dev/null | awk '/"Apple Development: /{print $2; exit}')
+fi
+if [[ -n "$SIGN_IDENTITY" ]]; then
+  echo "==> Signing with a stable identity"
+else
+  echo "==> Ad-hoc signing (no certificate found; macOS will ask for Keychain access after each rebuild)"
+  SIGN_IDENTITY="-"
+fi
+codesign --force --deep --sign "$SIGN_IDENTITY" \
   --entitlements "$ROOT/Sources/App/entitlements.plist" \
   --options runtime "$APP"
 codesign --verify --deep --strict "$APP"
