@@ -72,24 +72,28 @@ def png(width, height, pixel):
 
 
 def meter_icon(*windows):
-    """Rounded bars side by side, one per (percent_left, level), each filled
-    from the bottom to its % left in its level's colour."""
-    size, gap = ICON_SIZE, 10
+    """Rounded bars side by side along the bottom, one per (percent_left,
+    level), each filled to its % left in its level's colour. The top stays
+    clear for the button's own text."""
+    size, gap, height = ICON_SIZE, 10, ICON_SIZE * 2 // 5
     width = (size - gap * (len(windows) - 1)) // len(windows)
-    radius = min(22, width // 2)
+    radius = min(14, width // 2, height // 2)
     bars = []
     for i, (percent_left, level) in enumerate(windows):
         colour = LEVEL_COLOURS[level]
         bars.append((i * (width + gap), colour,
-                     size - round(size * max(0.0, min(100.0, percent_left or 0)) / 100),
+                     size - round(height * max(0.0, min(100.0, percent_left or 0)) / 100),
                      tuple(round(c * 0.22 + 0x1E * 0.78) for c in colour)))
+    top = size - height
 
     def inside(x0, x, y):
         cx = min(max(x, x0 + radius), x0 + width - 1 - radius)
-        cy = min(max(y, radius), size - 1 - radius)
+        cy = min(max(y, top + radius), size - 1 - radius)
         return (x - cx) ** 2 + (y - cy) ** 2 <= radius ** 2
 
     def pixel(x, y):
+        if y < top:
+            return (0, 0, 0, 0)
         for x0, colour, fill_top, track in bars:
             if x0 <= x < x0 + width:
                 if not inside(x0, x, y):

@@ -79,7 +79,7 @@ Plug-ins. It adds these states for `codex`, `claude` and `commandcode`
 | `weekLeft`, `weekReset` | `80%`, `Resets Oct 5 at 9pm` |
 | `summary` | `Claude` / `5h 44% · 7d 80%` |
 | `level`, `weekLevel` | `green`, `yellow`, `red` or `depleted` |
-| `icon` | two bars, 5-hour and weekly, each filled to its percent left in its level's colour |
+| `icon` | two bars along the bottom, 5-hour and weekly, each filled to its percent left in its level's colour; the top is left clear for button text |
 
 Common setups:
 
