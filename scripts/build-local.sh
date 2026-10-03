@@ -1,7 +1,7 @@
 #!/bin/bash
-# Builds NabBar: ClaudeBar under its own name, bundle id and settings folder
-# (~/.nabbar), showing only Codex, Claude and Command Code, with Sparkle
-# updates off. Ad-hoc signed, local only. Runs beside an installed ClaudeBar.
+# Builds NabBar, ad-hoc signs it, verifies the signature and packages the
+# Touch Portal plugin. NabBar's name, bundle id, URL scheme, settings folder
+# (~/.nabbar) and provider lineup all come from Sources/App/Info.plist.
 #
 #   scripts/build-local.sh            build + package into build/local/
 #   scripts/build-local.sh --install  also copy to /Applications/NabBar.app
@@ -13,51 +13,28 @@ cd "$(dirname "$0")/.."
 ROOT="$PWD"
 OUT="$ROOT/build/local"
 APP_NAME="NabBar"
-BUNDLE_ID="com.nabeegh.nabbar"
 HOME_DIR_NAME=".nabbar"
 DEST="/Applications/$APP_NAME.app"
-PLIST_BUDDY=/usr/libexec/PlistBuddy
 
-[[ "$DEST" == "/Applications/ClaudeBar.app" ]] && { echo "refusing to touch the release app" >&2; exit 1; }
+[[ "$DEST" == "/Applications/ClaudeBar.app" ]] && { echo "refusing to touch ClaudeBar" >&2; exit 1; }
 
-echo "==> Generating project without the AWS SDK (Bedrock is hidden here)"
-export TUIST_CLAUDEBAR_WITHOUT_AWS=1
+echo "==> Generating the project (without the AWS SDK; Bedrock is hidden)"
 tuist install
 tuist generate --no-open
 
 echo "==> Building (Release)"
 xcodebuild build \
-  -workspace ClaudeBar.xcworkspace \
-  -scheme ClaudeBar \
+  -workspace NabBar.xcworkspace \
+  -scheme NabBar \
   -configuration Release \
   -destination 'platform=macOS,arch=arm64' \
   -derivedDataPath "$OUT/DerivedData" \
   CODE_SIGN_IDENTITY=- CODE_SIGN_STYLE=Manual DEVELOPMENT_TEAM= \
   -quiet
 
-BUILT="$OUT/DerivedData/Build/Products/Release/ClaudeBar.app"
 APP="$OUT/$APP_NAME.app"
 rm -rf "$APP"
-ditto "$BUILT" "$APP"
-
-echo "==> Rebranding Info.plist"
-INFO="$APP/Contents/Info.plist"
-$PLIST_BUDDY -c "Set :CFBundleIdentifier $BUNDLE_ID" "$INFO"
-$PLIST_BUDDY -c "Set :CFBundleName $APP_NAME" "$INFO"
-$PLIST_BUDDY -c "Delete :CFBundleDisplayName" "$INFO" 2>/dev/null || true
-$PLIST_BUDDY -c "Add :CFBundleDisplayName string $APP_NAME" "$INFO"
-$PLIST_BUDDY -c "Set :NSHumanReadableCopyright Copyright 2026 M. Nabeegh. Based on ClaudeBar, copyright 2025 TDDWorks (MIT)." "$INFO"
-# No Sparkle feed: the updater never starts, so this copy can't update into upstream.
-$PLIST_BUDDY -c "Delete :SUFeedURL" "$INFO" 2>/dev/null || true
-$PLIST_BUDDY -c "Delete :SUPublicEDKey" "$INFO" 2>/dev/null || true
-$PLIST_BUDDY -c "Set :SUEnableAutomaticChecks false" "$INFO" 2>/dev/null || true
-# The installed ClaudeBar owns the claudebar:// scheme.
-$PLIST_BUDDY -c "Delete :CFBundleURLTypes" "$INFO" 2>/dev/null || true
-$PLIST_BUDDY -c "Add :ClaudeBarHomeDirectory string $HOME_DIR_NAME" "$INFO"
-$PLIST_BUDDY -c "Add :ClaudeBarProviderLineup array" "$INFO"
-for id in codex claude commandcode; do
-  $PLIST_BUDDY -c "Add :ClaudeBarProviderLineup: string $id" "$INFO"
-done
+ditto "$OUT/DerivedData/Build/Products/Release/$APP_NAME.app" "$APP"
 
 echo "==> Ad-hoc signing"
 codesign --force --deep --sign - \
