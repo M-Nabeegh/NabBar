@@ -61,19 +61,6 @@
             "Press Enter to continue": "\r",
             "ctrl+t to disable": "\r",
             "Yes, I trust this folder": "\r"
-          },
-          "session": {
-            "create": ["--session-id", "{{id}}", "--name", "NabBar Probe"],
-            "resume": ["--resume", "{{id}}"],
-            "recreateOn": ["no conversation found", "no session found"],
-            "unsupportedOn": [
-              "unknown option '--session-id'",
-              "unknown option '--name'",
-              "unknown option '--resume'",
-              "unexpected argument '--session-id'",
-              "unexpected argument '--name'",
-              "unexpected argument '--resume'"
-            ]
           }
         }
       },
@@ -128,19 +115,6 @@
             "Press Enter to continue": "\r",
             "ctrl+t to disable": "\r",
             "Yes, I trust this folder": "\r"
-          },
-          "session": {
-            "create": ["--session-id", "{{id}}", "--name", "NabBar Probe"],
-            "resume": ["--resume", "{{id}}"],
-            "recreateOn": ["no conversation found", "no session found"],
-            "unsupportedOn": [
-              "unknown option '--session-id'",
-              "unknown option '--name'",
-              "unknown option '--resume'",
-              "unexpected argument '--session-id'",
-              "unexpected argument '--name'",
-              "unexpected argument '--resume'"
-            ]
           }
         }
       },

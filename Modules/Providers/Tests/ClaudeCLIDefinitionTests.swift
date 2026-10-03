@@ -109,25 +109,15 @@ struct ClaudeCLIDefinitionTests {
         #expect(try call("cliCost").workingDirectory == .dedicated)
     }
 
-    // MARK: - One shared probe session (issue #132)
+    // MARK: - One launch per check
 
+    // Claude Code 2.1.x saves no session for a run that only opens `/usage`,
+    // so resuming one always failed and cost a second launch per refresh.
     @Test
-    func `both commands run inside a named probe session`() throws {
-        let usage = try call("cli").session
-        let cost = try call("cliCost").session
-
-        // The session contract is the same on both — only the vendor's facts;
-        // which session a login is in is the worker's own memory.
-        for session in [usage, cost] {
-            let session = try #require(session)
-            #expect(session.create == ["--session-id", "{{id}}", "--name", "NabBar Probe"])
-            #expect(session.resume == ["--resume", "{{id}}"])
-            #expect(session.recreateOn == ["no conversation found", "no session found"])
-            #expect(session.unsupportedOn.contains("unknown option '--session-id'"))
-            #expect(session.unsupportedOn.contains("unknown option '--resume'"))
-            #expect(session.unsupportedOn.allSatisfy { $0.hasPrefix("unknown option") || $0.hasPrefix("unexpected argument") })
-        }
-        #expect(usage == cost)
+    func `each check runs claude once, without a session`() throws {
+        #expect(try call("cli").session == nil)
+        #expect(try call("cliCost").session == nil)
+        #expect(try call("cli").args == ["/usage", "--allowed-tools", ""])
     }
 
     @Test
