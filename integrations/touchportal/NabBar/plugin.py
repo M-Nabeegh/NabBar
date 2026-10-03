@@ -28,6 +28,7 @@ TP_HOST, TP_PORT = "127.0.0.1", 12136
 PROVIDERS = ["codex", "claude", "commandcode"]
 STATUS_FILES = [os.path.expanduser("~/.nabbar/status.json")]
 POLL_SECONDS = 5
+RESEND_SECONDS = 60      # send every state again now and then, in case Touch Portal missed one
 
 # NabBar's status colours: more than 50% left, 20-50%, under 20%, nothing left.
 LEVEL_COLOURS = {
@@ -159,13 +160,16 @@ class Plugin:
         self.sock = socket.create_connection((TP_HOST, TP_PORT))
         self.running = True
         self.sent = {}
+        self.ready = threading.Event()   # set when Touch Portal answers the pairing
 
     def send(self, message):
         self.sock.sendall((json.dumps(message) + "\n").encode())
 
     def handle(self, msg):
         kind = msg.get("type")
-        if kind == "closePlugin" and msg.get("pluginId") == PLUGIN_ID:
+        if kind == "info":
+            self.ready.set()
+        elif kind == "closePlugin" and msg.get("pluginId") == PLUGIN_ID:
             self.running = False
         elif kind == "action" and msg.get("actionId") == REFRESH_ACTION:
             refresh_nabbar()
@@ -188,7 +192,13 @@ class Plugin:
     def run(self):
         self.send({"type": "pair", "id": PLUGIN_ID})
         threading.Thread(target=self.listen, daemon=True).start()
+        # States sent before Touch Portal's "info" reply can be dropped.
+        self.ready.wait(timeout=10)
+        last_full_send = 0.0
         while self.running:
+            if time.time() - last_full_send > RESEND_SECONDS:
+                self.sent.clear()
+                last_full_send = time.time()
             for sid, value in provider_states(read_status()).items():
                 if self.sent.get(sid) != value:
                     self.send({"type": "stateUpdate", "id": sid, "value": value})
