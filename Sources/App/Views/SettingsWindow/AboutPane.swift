@@ -38,7 +38,7 @@ struct AboutPane: View {
                         .multilineTextAlignment(.center)
                 }
 
-                Link(destination: URL(string: "https://github.com/tddworks/claudebar")!) {
+                Link(destination: URL(string: "https://github.com/M-Nabeegh/NabBar")!) {
                     HStack(spacing: 6) {
                         Image(systemName: "link")
                             .font(.system(size: 11, weight: .semibold))
