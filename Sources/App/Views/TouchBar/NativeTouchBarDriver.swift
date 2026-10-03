@@ -101,10 +101,10 @@ public final class NativeTouchBarDriver: NSObject, NSTouchBarDelegate {
 // MARK: - Touch Bar Identifiers
 
 extension NSTouchBarItem.Identifier {
-    public static let touchBarSummary = NSTouchBarItem.Identifier("com.tddworks.claudebar.touchbar.summary")
-    public static let touchBarProviders = NSTouchBarItem.Identifier("com.tddworks.claudebar.touchbar.providers")
-    public static let touchBarRefresh = NSTouchBarItem.Identifier("com.tddworks.claudebar.touchbar.refresh")
-    public static let touchBarSettings = NSTouchBarItem.Identifier("com.tddworks.claudebar.touchbar.settings")
+    public static let touchBarSummary = NSTouchBarItem.Identifier("com.nabeegh.nabbar.touchbar.summary")
+    public static let touchBarProviders = NSTouchBarItem.Identifier("com.nabeegh.nabbar.touchbar.providers")
+    public static let touchBarRefresh = NSTouchBarItem.Identifier("com.nabeegh.nabbar.touchbar.refresh")
+    public static let touchBarSettings = NSTouchBarItem.Identifier("com.nabeegh.nabbar.touchbar.settings")
 }
 
 // MARK: - SwiftUI Touch Bar Views

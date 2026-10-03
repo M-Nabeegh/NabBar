@@ -85,7 +85,7 @@ public struct DefaultCLIExecutor: CLIExecutor {
     /// Dedicated queue for blocking PTY runs, kept off the Swift cooperative
     /// pool. Concurrent so providers still refresh in parallel.
     private static let executionQueue = DispatchQueue(
-        label: "com.tddworks.claudebar.cli-execution",
+        label: "com.nabeegh.nabbar.cli-execution",
         qos: .utility,
         attributes: .concurrent
     )

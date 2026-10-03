@@ -1,13 +1,13 @@
 import AppKit
 import Infrastructure
 
-/// Receives `claudebar://` URLs for the app's whole lifetime.
+/// Receives `nabbar://` URLs for the app's whole lifetime.
 ///
 /// SwiftUI delivers a URL to a window scene and then to the `.onOpenURL`
 /// views inside it. A `MenuBarExtra` is not a window scene, so a handler on
 /// the popover's content never sees the URL. Worse, SwiftUI presents the only
 /// window scene it has, the Settings window, to deliver it, which is how
-/// `claudebar://open` used to open Settings. AppKit hands URLs to the
+/// `nabbar://open` used to open Settings. AppKit hands URLs to the
 /// application delegate before any of that, so the routing lives here.
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {

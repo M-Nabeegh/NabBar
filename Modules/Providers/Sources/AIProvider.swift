@@ -5,7 +5,7 @@ import Quotas
 /// explicit user intent.
 ///
 /// - `.interactive`: a genuine click (Refresh button, Touch Bar / notch
-///   refresh, `claudebar://refresh`, provider switch). Providers may do their
+///   refresh, `nabbar://refresh`, provider switch). Providers may do their
 ///   most expensive work and treat success as "the user connected".
 /// - `.background`: the periodic menu-bar poll. Must stay cheap — skipping
 ///   non-glanceable work like the daily-usage JSONL scan keeps idle energy

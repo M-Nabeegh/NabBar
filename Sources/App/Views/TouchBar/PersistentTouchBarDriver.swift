@@ -10,8 +10,8 @@ import Infrastructure
 public final class PersistentTouchBarDriver: NSObject, NSTouchBarDelegate {
     public static let shared = PersistentTouchBarDriver()
 
-    private let sceneId = NSTouchBarItem.Identifier("com.tddworks.claudebar.touchbar.scene")
-    private let emptyId = NSTouchBarItem.Identifier("com.tddworks.claudebar.touchbar.empty")
+    private let sceneId = NSTouchBarItem.Identifier("com.nabeegh.nabbar.touchbar.scene")
+    private let emptyId = NSTouchBarItem.Identifier("com.nabeegh.nabbar.touchbar.empty")
 
     private var touchBar: NSTouchBar?
     private var quotaView: TouchBarQuotaView?

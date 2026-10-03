@@ -11,12 +11,12 @@ import Sparkle
 #endif
 
 extension Notification.Name {
-    static let hookSettingsChanged = Notification.Name("com.tddworks.claudebar.hookSettingsChanged")
+    static let hookSettingsChanged = Notification.Name("com.nabeegh.nabbar.hookSettingsChanged")
 
     /// Posted by the Notify! pane when the device link or a stored surface
     /// handle changes. Those live outside observable state, so nothing the
     /// publish driver watches would otherwise tell it to try again.
-    static let notifySettingsChanged = Notification.Name("com.tddworks.claudebar.notifySettingsChanged")
+    static let notifySettingsChanged = Notification.Name("com.nabeegh.nabbar.notifySettingsChanged")
 }
 
 @main
@@ -69,7 +69,7 @@ struct NabBarApp: App {
 
     @Environment(\.openWindow) private var openWindow
 
-    /// Receives `claudebar://` URLs. Lives outside SwiftUI's scene routing,
+    /// Receives `nabbar://` URLs. Lives outside SwiftUI's scene routing,
     /// which cannot reach a MenuBarExtra (see AppDelegate).
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
 
@@ -467,7 +467,7 @@ struct NabBarApp: App {
         .windowResizability(.contentMinSize)
         // Without this, the Settings window is the only window scene and
         // SwiftUI presents it to deliver *every* incoming URL, including
-        // claudebar://open. AppDelegate routes every URL, so this window
+        // nabbar://open. AppDelegate routes every URL, so this window
         // claims none: an empty set matches nothing.
         .handlesExternalEvents(matching: [])
     }

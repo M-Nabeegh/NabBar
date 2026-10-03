@@ -123,7 +123,7 @@ public final class TouchBarQuotaView: NSView {
     public override func touchesBegan(with event: NSEvent) {
         guard let _ = event.touches(matching: .any, in: self).first else { return }
         // Tapping anywhere on the Touch Bar quota view opens ClaudeBar
-        if let url = URL(string: "claudebar://open") {
+        if let url = URL(string: "nabbar://open") {
             NSWorkspace.shared.open(url)
         }
     }

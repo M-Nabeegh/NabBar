@@ -4,7 +4,7 @@ import SwiftUI
 /// Makes the popover's window key whenever the popover comes on screen.
 ///
 /// Clicking the status item hands the popover key status, so Escape and the
-/// ⌘ shortcuts work. Opening it programmatically (`claudebar://open` from
+/// ⌘ shortcuts work. Opening it programmatically (`nabbar://open` from
 /// Alfred or a Touch Bar tap) only orders the window in: the app activates,
 /// but no window is key, and every key press goes nowhere. Asking for key
 /// status once the window exists covers both paths; when the window already

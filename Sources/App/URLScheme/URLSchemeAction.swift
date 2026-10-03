@@ -1,10 +1,10 @@
 import Foundation
 
-/// What a `claudebar://` URL asks the app to do.
+/// What a `nabbar://` URL asks the app to do.
 ///
-/// Only the exact documented URLs are actions: `claudebar://open`,
-/// `claudebar://refresh`, `claudebar://settings`, and their three-slash
-/// spelling (`claudebar:///open`). The URL is compared as a whole string, so
+/// Only the exact documented URLs are actions: `nabbar://open`,
+/// `nabbar://refresh`, `nabbar://settings`, and their three-slash
+/// spelling (`nabbar:///open`). The URL is compared as a whole string, so
 /// anything else, whether a parameter, a fragment, a user, a port or an extra
 /// path, is not an action. See docs/features/url-schemes/README.md.
 enum URLSchemeAction: String, Equatable, Sendable, CaseIterable {
@@ -12,7 +12,7 @@ enum URLSchemeAction: String, Equatable, Sendable, CaseIterable {
     case refresh
     case settings
 
-    static let scheme = "claudebar"
+    static let scheme = "nabbar"
 
     /// The exact URL strings that name this action.
     var acceptedURLStrings: Set<String> {

@@ -11,7 +11,7 @@ public final class KeychainCredentialRepository: CredentialRepository, @unchecke
 
     /// Creates a Keychain credential store with an isolated service name.
     /// - Parameter service: The Keychain service used to namespace credential items.
-    public init(service: String = "com.tddworks.claudebar.credentials") {
+    public init(service: String = "com.nabeegh.nabbar.credentials") {
         self.service = service
     }
 

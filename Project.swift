@@ -40,7 +40,7 @@ let project = Project(
             name: "Domain",
             destinations: .macOS,
             product: .staticFramework,
-            bundleId: "com.tddworks.claudebar.domain",
+            bundleId: "com.nabeegh.nabbar.domain",
             deploymentTargets: .macOS("15.0"),
             sources: ["Sources/Domain/**"],
             dependencies: [
@@ -64,7 +64,7 @@ let project = Project(
             name: "Quotas",
             destinations: .macOS,
             product: .staticFramework,
-            bundleId: "com.tddworks.claudebar.quotas",
+            bundleId: "com.nabeegh.nabbar.quotas",
             deploymentTargets: .macOS("15.0"),
             sources: ["Modules/Quotas/Sources/**"],
             settings: .settings(
@@ -79,7 +79,7 @@ let project = Project(
             name: "Diagnostics",
             destinations: .macOS,
             product: .staticFramework,
-            bundleId: "com.tddworks.claudebar.diagnostics",
+            bundleId: "com.nabeegh.nabbar.diagnostics",
             deploymentTargets: .macOS("15.0"),
             sources: ["Modules/Diagnostics/Sources/**"],
             settings: .settings(
@@ -95,7 +95,7 @@ let project = Project(
             name: "DataSources",
             destinations: .macOS,
             product: .staticFramework,
-            bundleId: "com.tddworks.claudebar.datasources",
+            bundleId: "com.nabeegh.nabbar.datasources",
             deploymentTargets: .macOS("15.0"),
             sources: ["Modules/DataSources/Sources/**"],
             dependencies: [
@@ -119,7 +119,7 @@ let project = Project(
             name: "AWSClients",
             destinations: .macOS,
             product: .staticFramework,
-            bundleId: "com.tddworks.claudebar.awsclients",
+            bundleId: "com.nabeegh.nabbar.awsclients",
             deploymentTargets: .macOS("15.0"),
             sources: ["Modules/AWSClients/Sources/**"],
             dependencies: [
@@ -145,7 +145,7 @@ let project = Project(
             name: "Providers",
             destinations: .macOS,
             product: .staticFramework,
-            bundleId: "com.tddworks.claudebar.providers",
+            bundleId: "com.nabeegh.nabbar.providers",
             deploymentTargets: .macOS("15.0"),
             sources: ["Modules/Providers/Sources/**"],
             resources: ["Modules/Providers/Resources/**"],
@@ -166,7 +166,7 @@ let project = Project(
             name: "AWSClientsTests",
             destinations: .macOS,
             product: .unitTests,
-            bundleId: "com.tddworks.claudebar.awsclients-tests",
+            bundleId: "com.nabeegh.nabbar.awsclients-tests",
             deploymentTargets: .macOS("15.0"),
             sources: ["Modules/AWSClients/Tests/**"],
             dependencies: [
@@ -184,7 +184,7 @@ let project = Project(
             name: "DataSourcesTests",
             destinations: .macOS,
             product: .unitTests,
-            bundleId: "com.tddworks.claudebar.datasources-tests",
+            bundleId: "com.nabeegh.nabbar.datasources-tests",
             deploymentTargets: .macOS("15.0"),
             sources: ["Modules/DataSources/Tests/**"],
             dependencies: [
@@ -203,7 +203,7 @@ let project = Project(
             name: "ProvidersTests",
             destinations: .macOS,
             product: .unitTests,
-            bundleId: "com.tddworks.claudebar.providers-tests",
+            bundleId: "com.nabeegh.nabbar.providers-tests",
             deploymentTargets: .macOS("15.0"),
             sources: ["Modules/Providers/Tests/**"],
             dependencies: [
@@ -224,7 +224,7 @@ let project = Project(
             name: "Infrastructure",
             destinations: .macOS,
             product: .staticFramework,
-            bundleId: "com.tddworks.claudebar.infrastructure",
+            bundleId: "com.nabeegh.nabbar.infrastructure",
             deploymentTargets: .macOS("15.0"),
             sources: ["Sources/Infrastructure/**"],
             dependencies: [
@@ -248,7 +248,7 @@ let project = Project(
             name: "NabBar",
             destinations: .macOS,
             product: .app,
-            bundleId: "com.tddworks.claudebar",
+            bundleId: "com.nabeegh.nabbar",
             deploymentTargets: .macOS("15.0"),
             infoPlist: .file(path: "Sources/App/Info.plist"),
             sources: ["Sources/App/**"],
@@ -288,7 +288,7 @@ let project = Project(
             name: "DomainTests",
             destinations: .macOS,
             product: .unitTests,
-            bundleId: "com.tddworks.claudebar.domain-tests",
+            bundleId: "com.nabeegh.nabbar.domain-tests",
             deploymentTargets: .macOS("15.0"),
             sources: ["Tests/DomainTests/**"],
             dependencies: [
@@ -308,7 +308,7 @@ let project = Project(
             name: "InfrastructureTests",
             destinations: .macOS,
             product: .unitTests,
-            bundleId: "com.tddworks.claudebar.infrastructure-tests",
+            bundleId: "com.nabeegh.nabbar.infrastructure-tests",
             deploymentTargets: .macOS("15.0"),
             sources: ["Tests/InfrastructureTests/**"],
             dependencies: [
@@ -330,7 +330,7 @@ let project = Project(
             name: "AppTests",
             destinations: .macOS,
             product: .unitTests,
-            bundleId: "com.tddworks.claudebar.app-tests",
+            bundleId: "com.nabeegh.nabbar.app-tests",
             deploymentTargets: .macOS("15.0"),
             sources: ["Tests/AppTests/**"],
             dependencies: [
@@ -345,7 +345,7 @@ let project = Project(
             name: "AcceptanceTests",
             destinations: .macOS,
             product: .unitTests,
-            bundleId: "com.tddworks.claudebar.acceptance-tests",
+            bundleId: "com.nabeegh.nabbar.acceptance-tests",
             deploymentTargets: .macOS("15.0"),
             sources: ["Tests/AcceptanceTests/**"],
             dependencies: [
