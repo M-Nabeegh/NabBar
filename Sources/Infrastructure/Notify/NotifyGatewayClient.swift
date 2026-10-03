@@ -107,7 +107,7 @@ public struct NotifyGatewayClient: NotifyPublishing, Sendable {
         let data = try await send(request, route: route, accepting: [200])
 
         guard let decoded = try? JSONDecoder().decode(LiveActivityWriteResponse.self, from: data) else {
-            AppLog.network.error("Notify!: \(route) answered a body ClaudeBar could not read")
+            AppLog.network.error("Notify!: \(route) answered a body NabBar could not read")
             throw NotifyPublishError.malformedResponse
         }
 
@@ -184,7 +184,7 @@ public struct NotifyGatewayClient: NotifyPublishing, Sendable {
 
         guard let decoded = try? JSONDecoder().decode(WidgetWriteResponse.self, from: data),
               let identifier = decoded.widgetId ?? widgetId else {
-            AppLog.network.error("Notify!: \(route) answered a body ClaudeBar could not read")
+            AppLog.network.error("Notify!: \(route) answered a body NabBar could not read")
             throw NotifyPublishError.malformedResponse
         }
         return identifier
@@ -262,7 +262,7 @@ public struct NotifyGatewayClient: NotifyPublishing, Sendable {
             //
             // The gateway's own sentence does not survive `unexpectedStatus`, which carries a
             // status code and nothing else, and that costs nothing: an empty message picks the
-            // error's own "switched off at the moment, ClaudeBar will try again later" wording,
+            // error's own "switched off at the moment, NabBar will try again later" wording,
             // which is the sentence to put in front of a user however the server phrased it.
             throw NotifyPublishError.surfaceSwitchedOff("")
         } catch NotifyPublishError.liveActivityUnavailable(let message) {
@@ -277,7 +277,7 @@ public struct NotifyGatewayClient: NotifyPublishing, Sendable {
 
         guard let decoded = try? JSONDecoder().decode(ScreenWidgetWriteResponse.self, from: data),
               let identifier = decoded.screenWidgetId ?? screenWidgetId else {
-            AppLog.network.error("Notify!: \(route) answered a body ClaudeBar could not read")
+            AppLog.network.error("Notify!: \(route) answered a body NabBar could not read")
             throw NotifyPublishError.malformedResponse
         }
         return identifier
@@ -350,7 +350,7 @@ public struct NotifyGatewayClient: NotifyPublishing, Sendable {
         }
 
         guard let decoded = try? JSONDecoder().decode(LinkResponse.self, from: data) else {
-            AppLog.network.error("Notify!: GET \(Self.linkRoute) answered a body ClaudeBar could not read")
+            AppLog.network.error("Notify!: GET \(Self.linkRoute) answered a body NabBar could not read")
             throw NotifyPublishError.malformedResponse
         }
 
@@ -358,7 +358,7 @@ public struct NotifyGatewayClient: NotifyPublishing, Sendable {
         // so a group link has to be rejected here rather than failing later with a puzzling 400.
         guard decoded.type == "device" else {
             throw NotifyPublishError.invalidPayload(
-                "That link points at a Notify! group. ClaudeBar needs a device link, not a group."
+                "That link points at a Notify! group. NabBar needs a device link, not a group."
             )
         }
 
@@ -462,7 +462,7 @@ public struct NotifyGatewayClient: NotifyPublishing, Sendable {
         do {
             return try JSONSerialization.data(withJSONObject: body)
         } catch {
-            throw NotifyPublishError.invalidPayload("ClaudeBar could not encode this update.")
+            throw NotifyPublishError.invalidPayload("NabBar could not encode this update.")
         }
     }
 

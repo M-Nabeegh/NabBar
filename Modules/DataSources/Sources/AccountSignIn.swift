@@ -52,7 +52,7 @@ public enum SignInError: Error, Equatable, LocalizedError {
         case .cliNotFound(let cli):
             "`\(cli)` wasn't found. Install it, or choose a folder you already signed in to."
         case .folderExists:
-            "That folder already exists, so ClaudeBar won't sign in there. Try again."
+            "That folder already exists, so NabBar won't sign in there. Try again."
         case .didNotFinish:
             "Sign-in didn't finish. Try again and complete it in your browser."
         case .timedOut:

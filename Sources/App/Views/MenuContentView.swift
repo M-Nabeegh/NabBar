@@ -1049,7 +1049,7 @@ struct MenuContentView: View {
                 }
             }
             .buttonStyle(.plain)
-            .help("Quit ClaudeBar (⌘Q)")
+            .help("Quit NabBar (⌘Q)")
             .keyboardShortcut("q")
         }
         .opacity(animateIn ? 1 : 0)

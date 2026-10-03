@@ -150,7 +150,7 @@ public struct TouchBarActiveProviderBadge: View {
             }
             return name
         }
-        return "ClaudeBar"
+        return "NabBar"
     }
 
     private var statusColor: Color {

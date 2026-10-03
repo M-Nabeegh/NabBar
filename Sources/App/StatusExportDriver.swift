@@ -161,7 +161,7 @@ public final class StatusExportDriver {
         return ExportPayload(
             enabled: true,
             updatedAt: "",
-            menuBarText: label?.text ?? selected?.name ?? "ClaudeBar",
+            menuBarText: label?.text ?? selected?.name ?? "NabBar",
             status: statusString,
             selectedProviderId: monitor.selectedProviderId,
             selectedProviderName: selected?.name,

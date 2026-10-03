@@ -61,7 +61,7 @@ struct ImportProviderSheet: View {
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .background(RoundedRectangle(cornerRadius: 6).fill(theme.glassBackground))
                     }
-                    Toggle("I trust this command — ClaudeBar runs it with my rights each time it refreshes", isOn: $trustsCommands)
+                    Toggle("I trust this command — NabBar runs it with my rights each time it refreshes", isOn: $trustsCommands)
                         .font(.system(size: 10, weight: .medium, design: theme.fontDesign))
                 }
             }

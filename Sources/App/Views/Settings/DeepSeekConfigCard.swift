@@ -250,7 +250,7 @@ struct DeepSeekConfigCard: View {
                     settings.deepseek.deleteDeepSeekApiKey()
                     hasStoredDeepSeekApiKey = settings.deepseek.hasDeepSeekApiKey()
                     deepSeekApiKeyInput = ""
-                    deepSeekTestResult = hasStoredDeepSeekApiKey ? "Failed: ClaudeBar could not remove the API key securely." : nil
+                    deepSeekTestResult = hasStoredDeepSeekApiKey ? "Failed: NabBar could not remove the API key securely." : nil
                 } label: {
                     HStack(spacing: 4) {
                         Image(systemName: "trash.fill")
@@ -278,7 +278,7 @@ struct DeepSeekConfigCard: View {
             AppLog.credentials.info("Saving DeepSeek API key for connection test")
             settings.deepseek.saveDeepSeekApiKey(apiKey)
             guard settings.deepseek.getDeepSeekApiKey() == apiKey else {
-                deepSeekTestResult = "Failed: ClaudeBar could not save the API key securely."
+                deepSeekTestResult = "Failed: NabBar could not save the API key securely."
                 return
             }
             hasStoredDeepSeekApiKey = true

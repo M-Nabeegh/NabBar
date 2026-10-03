@@ -88,7 +88,7 @@ struct AddAccountSheet: View {
                 ProgressView().controlSize(.small)
                 Text("Finish signing in in your browser…").foregroundStyle(theme.textPrimary)
             }
-            Text("ClaudeBar made a new folder for this login. Your usual \(provider.name) login isn't touched.")
+            Text("NabBar made a new folder for this login. Your usual \(provider.name) login isn't touched.")
                 .font(.callout).foregroundStyle(theme.textSecondary)
             HStack { Spacer(); Button("Cancel") { task.cancel(); step = .how }.keyboardShortcut(.cancelAction) }
 

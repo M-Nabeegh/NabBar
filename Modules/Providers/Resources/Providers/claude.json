@@ -63,7 +63,7 @@
             "Yes, I trust this folder": "\r"
           },
           "session": {
-            "create": ["--session-id", "{{id}}", "--name", "ClaudeBar Probe"],
+            "create": ["--session-id", "{{id}}", "--name", "NabBar Probe"],
             "resume": ["--resume", "{{id}}"],
             "recreateOn": ["no conversation found", "no session found"],
             "unsupportedOn": [
@@ -130,7 +130,7 @@
             "Yes, I trust this folder": "\r"
           },
           "session": {
-            "create": ["--session-id", "{{id}}", "--name", "ClaudeBar Probe"],
+            "create": ["--session-id", "{{id}}", "--name", "NabBar Probe"],
             "resume": ["--resume", "{{id}}"],
             "recreateOn": ["no conversation found", "no session found"],
             "unsupportedOn": [
@@ -203,7 +203,7 @@
             "Accept": "application/json",
             "Content-Type": "application/json",
             "anthropic-beta": "oauth-2025-04-20",
-            "User-Agent": "ClaudeBar"
+            "User-Agent": "NabBar"
           },
           "timeout": 15
         }

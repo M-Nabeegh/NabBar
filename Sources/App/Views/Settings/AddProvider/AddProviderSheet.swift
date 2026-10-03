@@ -223,7 +223,7 @@ struct AddProviderSheet: View {
             case .environment:
                 TextField("VARIABLE_NAME", text: $environmentVariable)
                     .textFieldStyle(.roundedBorder)
-                hint("Read when ClaudeBar starts; a variable set only in your shell profile isn't visible to it.")
+                hint("Read when NabBar starts; a variable set only in your shell profile isn't visible to it.")
             case .none:
                 EmptyView()
             }
@@ -246,7 +246,7 @@ struct AddProviderSheet: View {
             TextField("tool usage --json", text: $draft.command)
                 .textFieldStyle(.roundedBorder)
                 .font(.system(.body, design: .monospaced))
-            hint("ClaudeBar runs this in its own folder, with your rights, each time it refreshes.")
+            hint("NabBar runs this in its own folder, with your rights, each time it refreshes.")
         case .file:
             label("FILE")
             HStack {

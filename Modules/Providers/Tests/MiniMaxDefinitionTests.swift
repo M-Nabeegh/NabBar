@@ -204,7 +204,7 @@ struct MiniMaxDefinitionTests {
     }
 
     @Test func `Settings prints the lookup order with the variable's own name`() throws {
-        #expect(try make().definitionAsRun.dataSource("api")?.credential?.lookupOrder == ["$MINIMAX_API_KEY", "API key saved in ClaudeBar"])
+        #expect(try make().definitionAsRun.dataSource("api")?.credential?.lookupOrder == ["$MINIMAX_API_KEY", "API key saved in NabBar"])
         #expect(try make(authEnvVar: "MY_MINIMAX_KEY").definitionAsRun.dataSource("api")?.credential?.lookupOrder.first == "$MY_MINIMAX_KEY")
     }
 

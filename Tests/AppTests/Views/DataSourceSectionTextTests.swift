@@ -40,8 +40,8 @@ struct DataSourceSectionTextTests {
 
     @Test
     func `the fallback is one sentence`() throws {
-        #expect(DataSourceSectionText(definition: try claude()).fallback(for: "api") == "If API is unavailable, ClaudeBar tries CLI.")
-        #expect(DataSourceSectionText(definition: try codex()).fallback(for: "rpc") == "If RPC is unavailable, ClaudeBar tries Terminal.")
+        #expect(DataSourceSectionText(definition: try claude()).fallback(for: "api") == "If API is unavailable, NabBar tries CLI.")
+        #expect(DataSourceSectionText(definition: try codex()).fallback(for: "rpc") == "If RPC is unavailable, NabBar tries Terminal.")
         #expect(DataSourceSectionText(definition: try codex()).fallback(for: "api") == nil)
     }
 

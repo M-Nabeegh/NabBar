@@ -141,7 +141,7 @@ struct NotifyPane: View {
                 // read that as "in the Keychain", so where it actually went is
                 // said out loud rather than left to be assumed.
                 statusText(
-                    "Stored in ClaudeBar's app credentials rather than the Keychain, which refuses builds that are not signed with a developer identity.",
+                    "Stored in NabBar's app credentials rather than the Keychain, which refuses builds that are not signed with a developer identity.",
                     tone: theme.textTertiary
                 )
                 .padding(.top, 6)
@@ -661,7 +661,7 @@ struct NotifyPane: View {
         // actually on file before it congratulates anyone.
         guard hasDeviceToken else {
             verifyOutcome = NotifyActionOutcome(
-                message: "Could not store the token on this Mac. Check Console for a Keychain error from ClaudeBar, and try again.",
+                message: "Could not store the token on this Mac. Check Console for a Keychain error from NabBar, and try again.",
                 isFailure: true
             )
             return

@@ -212,9 +212,9 @@ final class NotifyPublishDriver {
             // has. The backoff is named first because it is the one with a
             // remedy.
             if tileSuppressedUntil != nil {
-                return "Notify! is still holding off Live Activity starts. ClaudeBar will retry on its own."
+                return "Notify! is still holding off Live Activity starts. NabBar will retry on its own."
             }
-            return "Notify! is not serving Home Screen widgets yet. ClaudeBar will try again later."
+            return "Notify! is not serving Home Screen widgets yet. NabBar will try again later."
         }
 
         return await startPublish(payload: payload, decision: decision, at: now).value

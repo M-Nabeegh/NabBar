@@ -93,7 +93,7 @@ struct NabBarApp: App {
     init() {
         let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.0"
         let build = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "1"
-        AppLog.ui.info("ClaudeBar v\(version) (\(build)) initializing...")
+        AppLog.ui.info("NabBar v\(version) (\(build)) initializing...")
 
         // Create the shared settings repository (JSON-backed: ~/.claudebar/settings.json)
         // JSONSettingsRepository implements all sub-protocols:
@@ -314,7 +314,7 @@ struct NabBarApp: App {
         // Note: Notification permission is requested in onAppear, not here
         // Menu bar apps need the run loop to be active before requesting permissions
 
-        AppLog.ui.info("ClaudeBar initialization complete")
+        AppLog.ui.info("NabBar initialization complete")
     }
 
     /// App settings for theme
@@ -446,7 +446,7 @@ struct NabBarApp: App {
         // Standalone Settings window (opened from the popover's gear button).
         // Hidden title bar: the sidebar runs the full window height and the
         // traffic lights overlay its top — see SettingsWindowView.
-        Window("ClaudeBar Settings", id: "settings") {
+        Window("NabBar Settings", id: "settings") {
             Group {
                 #if ENABLE_SPARKLE
                 SettingsWindowView(monitor: monitor, notifyDriver: notifyDriver) { enabled in

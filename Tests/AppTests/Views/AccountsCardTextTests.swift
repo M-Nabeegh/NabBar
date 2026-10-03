@@ -60,7 +60,7 @@ struct AccountsCardTextTests {
         #expect(text.defaultLoginDescription == "Default account")
         #expect(text.reauthHelp(for: provider.defaultAccount) == "Update the default account's key in Settings, then refresh.")
         #expect(text.reauthHelp(for: provider.accounts[1]) == "Remove this account and add it again with a valid key.")
-        #expect(text.removeMessage(for: provider.accounts[1]) == "Removes Work from ClaudeBar and deletes its saved keys.")
+        #expect(text.removeMessage(for: provider.accounts[1]) == "Removes Work from NabBar and deletes its saved keys.")
     }
 
     @Test
@@ -83,8 +83,8 @@ struct AccountsCardTextTests {
         let provider = try codex([login("a", folder: made, madeBy: .signIn), login("b", folder: "/Users/me/codex-b", madeBy: .folder)])
         let text = AccountsCardText(provider: provider)
 
-        #expect(text.removeMessage(for: provider.accounts[1]) == "Removes a@example.com from ClaudeBar and deletes the sign-in ClaudeBar kept for it.")
-        #expect(text.removeMessage(for: provider.accounts[2]) == "Removes b@example.com from ClaudeBar. Its login and folder stay where they are.")
+        #expect(text.removeMessage(for: provider.accounts[1]) == "Removes a@example.com from NabBar and deletes the sign-in NabBar kept for it.")
+        #expect(text.removeMessage(for: provider.accounts[2]) == "Removes b@example.com from NabBar. Its login and folder stay where they are.")
     }
 
     @Test
@@ -104,7 +104,7 @@ struct AccountsCardTextTests {
         let provider = Providers.make(try ProviderDefinition.parse(Data(json.utf8)), settings: settings, accounts: [account])
         let text = AccountsCardText(provider: provider)
 
-        #expect(text.removeMessage(for: provider.accounts[1]) == "Removes Work from ClaudeBar. Its login and folder stay where they are.")
+        #expect(text.removeMessage(for: provider.accounts[1]) == "Removes Work from NabBar. Its login and folder stay where they are.")
         #expect(text.reauthHelp(for: provider.accounts[1]) == "Sign in again in /tmp/work profile with your CLI, then refresh.")
     }
 

@@ -126,7 +126,7 @@ struct ProviderSettingsTests {
     @Test
     func `a key the vault does not keep leaves no account behind`() throws {
         let acme = try providerWith(vault: RefusingVault())
-        #expect(throws: UsageError.executionFailed("ClaudeBar couldn't keep this key securely. The account wasn't added.")) {
+        #expect(throws: UsageError.executionFailed("NabBar couldn't keep this key securely. The account wasn't added.")) {
             try acme.addAccount(filling: ["apiKey": "sk", "home": "/Users/me/.acme-work"])
         }
         #expect(acme.accounts.count == 1)

@@ -63,7 +63,7 @@ struct SessionEventTests {
         let event = SessionEvent(
             sessionId: "probe-1",
             eventName: .sessionEnd,
-            cwd: "/Users/test/Library/Application Support/ClaudeBar/Probe"
+            cwd: "/Users/test/Library/Application Support/NabBar/Probe"
         )
 
         #expect(event.isClaudeBarProbe)
@@ -74,7 +74,7 @@ struct SessionEventTests {
         let event = SessionEvent(
             sessionId: "probe-2",
             eventName: .sessionStart,
-            cwd: "/Users/test/Library/Application Support/ClaudeBar/Probe/"
+            cwd: "/Users/test/Library/Application Support/NabBar/Probe/"
         )
 
         #expect(event.isClaudeBarProbe)

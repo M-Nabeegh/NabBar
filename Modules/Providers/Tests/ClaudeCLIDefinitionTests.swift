@@ -120,7 +120,7 @@ struct ClaudeCLIDefinitionTests {
         // which session a login is in is the worker's own memory.
         for session in [usage, cost] {
             let session = try #require(session)
-            #expect(session.create == ["--session-id", "{{id}}", "--name", "ClaudeBar Probe"])
+            #expect(session.create == ["--session-id", "{{id}}", "--name", "NabBar Probe"])
             #expect(session.resume == ["--resume", "{{id}}"])
             #expect(session.recreateOn == ["no conversation found", "no session found"])
             #expect(session.unsupportedOn.contains("unknown option '--session-id'"))
@@ -134,7 +134,7 @@ struct ClaudeCLIDefinitionTests {
     func `the probe directory is created under ClaudeBar's application support`() {
         let url = CLIWorkingDirectory.resolve()
 
-        #expect(url.path.contains("ClaudeBar/Probe"))
+        #expect(url.path.contains("NabBar/Probe"))
         #expect(FileManager.default.fileExists(atPath: url.path))
     }
 

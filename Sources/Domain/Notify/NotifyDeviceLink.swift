@@ -288,9 +288,9 @@ public enum NotifyDeviceKind: Sendable, Equatable, Hashable, CaseIterable {
         case .appDevice, .unrecognized:
             nil
         case .mac:
-            "This is a Mac ID. A Live Activity is an iPhone and iPad feature, so ClaudeBar cannot start one here. The widget still works."
+            "This is a Mac ID. A Live Activity is an iPhone and iPad feature, so NabBar cannot start one here. The widget still works."
         case .web:
-            "This is a browser ID. A Live Activity is an iPhone and iPad feature, so ClaudeBar cannot start one here. The widget still works."
+            "This is a browser ID. A Live Activity is an iPhone and iPad feature, so NabBar cannot start one here. The widget still works."
         case .group:
             Self.groupReason
         }

@@ -450,7 +450,7 @@ extension CredentialLookup {
         case .environment(let name): ["$\(name)"]
         case .jsonFile(let file): [file.path]
         case .keychain(let item): ["Keychain “\(item.service)”"]
-        case .setting: ["API key saved in ClaudeBar"]
+        case .setting: ["API key saved in NabBar"]
         case .browserCookies(let cookies): ["Browser cookies for \(cookies.domains.first ?? "the site")"]
         case .sqlite(let database): [database.path]
         case .refined(let base, _): base.lookupOrder

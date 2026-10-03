@@ -27,7 +27,7 @@ public struct NotifyPayloadBuilder: Sendable {
     /// current quota: the gateway treats a title as an identity, and a widget
     /// that renamed itself whenever the user switched provider would be
     /// unrecognizable in the phone's widget picker.
-    public static let defaultTitle = "ClaudeBar"
+    public static let defaultTitle = "NabBar"
 
     private let title: String
 

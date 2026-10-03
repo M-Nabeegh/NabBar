@@ -26,7 +26,7 @@
     {
       "kind": "rpc",
       "label": "RPC",
-      "summary": "Uses codex app-server via JSON-RPC. Default, works with any auth. ClaudeBar never starts the Codex login itself.",
+      "summary": "Uses codex app-server via JSON-RPC. Default, works with any auth. NabBar never starts the Codex login itself.",
       "fetch": {
         "jsonRpc": {
           "cli": "codex",

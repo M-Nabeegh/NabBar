@@ -58,7 +58,7 @@ struct SettingAndFileTests {
 
     @Test
     func `a saved key reads as ClaudeBar's, never its value`() throws {
-        #expect(try source(Self.api).credential?.lookupOrder == ["API key saved in ClaudeBar"])
+        #expect(try source(Self.api).credential?.lookupOrder == ["API key saved in NabBar"])
     }
 
     @Test

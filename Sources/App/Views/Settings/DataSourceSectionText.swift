@@ -35,7 +35,7 @@ struct DataSourceSectionText {
     var cliLocation: (placeholder: String, help: String)? {
         definition.cli.map { cli in
             ("Found automatically: \(cli)",
-             "The \(cli) program ClaudeBar runs for every account and for Add Account's sign-in. Choose one when yours isn't found, or isn't the one you want. A shell alias can't be used: choose the program it runs.")
+             "The \(cli) program NabBar runs for every account and for Add Account's sign-in. Choose one when yours isn't found, or isn't the one you want. A shell alias can't be used: choose the program it runs.")
         }
     }
 
@@ -61,10 +61,10 @@ struct DataSourceSectionText {
         definition.dataSource(kind)?.note
     }
 
-    /// The fallback as one sentence — "If API is unavailable, ClaudeBar tries CLI."
+    /// The fallback as one sentence — "If API is unavailable, NabBar tries CLI."
     func fallback(for kind: String) -> String? {
         guard let fallback = definition.dataSource(kind)?.fallback else { return nil }
-        return "If \(label(of: kind)) is unavailable, ClaudeBar tries \(label(of: fallback.to))."
+        return "If \(label(of: kind)) is unavailable, NabBar tries \(label(of: fallback.to))."
     }
 
     /// Whether the person can switch the fallback off.

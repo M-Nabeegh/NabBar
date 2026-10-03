@@ -58,7 +58,7 @@ public struct SessionEvent: Sendable, Equatable, Codable {
             return true
         }
         let components = ((cwd as NSString).standardizingPath as NSString).pathComponents
-        return Array(components.suffix(2)) == ["ClaudeBar", "Probe"]
+        return Array(components.suffix(2)) == ["NabBar", "Probe"]
     }
 
     /// The types of hook events from Claude Code

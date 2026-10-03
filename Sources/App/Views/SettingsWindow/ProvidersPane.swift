@@ -92,7 +92,7 @@ struct ProvidersPane: View {
                 importError = nil
                 importing = IdentifiedReview(value: try ProviderCatalog().review(Data(contentsOf: url)))
             } catch {
-                importError = "Not a ClaudeBar provider: \(error.localizedDescription)"
+                importError = "Not a NabBar provider: \(error.localizedDescription)"
             }
         }
     }

@@ -33,7 +33,7 @@ struct NotifyGatewayClientTests {
     static let widgetResponse = """
     {
       "widgetId": "WG4H2QZ1",
-      "content": { "title": "ClaudeBar" },
+      "content": { "title": "NabBar" },
       "createdAt": "2026-09-03T09:00:00Z",
       "updatedAt": "2026-09-03T09:00:00Z",
       "updateUrl": "https://push.getnotifyapp.com/widgets/WG4H2QZ1"
@@ -45,7 +45,7 @@ struct NotifyGatewayClientTests {
     static let screenWidgetResponse = """
     {
       "screenWidgetId": "SW8N3PQ2",
-      "content": { "title": "ClaudeBar" },
+      "content": { "title": "NabBar" },
       "staleAt": 1772539200,
       "createdAt": "2026-09-03T09:00:00Z",
       "updatedAt": "2026-09-03T09:00:00Z",
@@ -97,7 +97,7 @@ struct NotifyGatewayClientTests {
         ]
         return try #require(
             NotifyTile(
-                title: "ClaudeBar",
+                title: "NabBar",
                 body: "Claude 5h 42% left",
                 symbolName: NotifySymbol.quota,
                 tintHex: "#59EBAD",
@@ -111,7 +111,7 @@ struct NotifyGatewayClientTests {
     private func makeGauge() throws -> NotifyGauge {
         try #require(
             NotifyGauge(
-                title: "ClaudeBar",
+                title: "NabBar",
                 value: "42",
                 unit: "%",
                 detail: "Claude 5h, resets in 2:14",
@@ -125,7 +125,7 @@ struct NotifyGatewayClientTests {
     /// A gauge carrying nothing but its identity, for proving the fields ClaudeBar drives are
     /// stated as explicit nulls rather than quietly left out.
     private func makeTitleOnlyGauge() throws -> NotifyGauge {
-        try #require(NotifyGauge(title: "ClaudeBar"))
+        try #require(NotifyGauge(title: "NabBar"))
     }
 
     // MARK: - Helpers
@@ -210,7 +210,7 @@ struct NotifyGatewayClientTests {
         // Then: `new` is what stops the start taking over a tile the user began elsewhere
         let body = try jsonBody(of: capturedRequest)
         #expect(body["new"] as? Bool == true)
-        #expect(body["title"] as? String == "ClaudeBar")
+        #expect(body["title"] as? String == "NabBar")
         #expect(body["body"] as? String == "Claude 5h 42% left")
         #expect(body["symbol"] as? String == "gauge.with.needle")
         #expect(body["tint"] as? String == "#59EBAD")
@@ -290,7 +290,7 @@ struct NotifyGatewayClientTests {
         )
         let body = try jsonBody(of: capturedRequest)
         #expect(body.keys.contains("new") == false)
-        #expect(body["title"] as? String == "ClaudeBar")
+        #expect(body["title"] as? String == "NabBar")
     }
 
     @Test
@@ -341,7 +341,7 @@ struct NotifyGatewayClientTests {
         #expect(capturedRequest?.httpMethod == "POST")
         let body = try jsonBody(of: capturedRequest)
         #expect(body["new"] as? Bool == true)
-        #expect(body["title"] as? String == "ClaudeBar")
+        #expect(body["title"] as? String == "NabBar")
         #expect(body["value"] as? String == "42")
         #expect(body["unit"] as? String == "%")
         #expect(body["detail"] as? String == "Claude 5h, resets in 2:14")
@@ -435,7 +435,7 @@ struct NotifyGatewayClientTests {
         let link = try makeLink()
         let tile = try #require(
             NotifyTile(
-                title: "ClaudeBar",
+                title: "NabBar",
                 body: "Amp Code Balance, $3.10 left",
                 symbolName: NotifySymbol.quota,
                 tintHex: QuotaStatus.healthy.notifyTintHex,
@@ -503,7 +503,7 @@ struct NotifyGatewayClientTests {
         #expect(capturedRequest?.value(forHTTPHeaderField: "Content-Type") == "application/json")
         let body = try jsonBody(of: capturedRequest)
         #expect(body["new"] as? Bool == true)
-        #expect(body["title"] as? String == "ClaudeBar")
+        #expect(body["title"] as? String == "NabBar")
         #expect(identifier == Self.screenWidgetId)
     }
 
@@ -551,7 +551,7 @@ struct NotifyGatewayClientTests {
         )
         let body = try jsonBody(of: capturedRequest)
         #expect(body.keys.contains("new") == false)
-        #expect(body["title"] as? String == "ClaudeBar")
+        #expect(body["title"] as? String == "NabBar")
         #expect(identifier == Self.screenWidgetId)
     }
 
@@ -595,7 +595,7 @@ struct NotifyGatewayClientTests {
 
         // And the thing being compared is a real body rather than two empty dictionaries, which
         // would satisfy the equality above and prove nothing.
-        #expect(screenBody["title"] as? String == "ClaudeBar")
+        #expect(screenBody["title"] as? String == "NabBar")
         #expect((screenBody["metrics"] as? [[String: Any]])?.count == 2)
     }
 

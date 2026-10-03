@@ -127,7 +127,7 @@ public final class Provider {
         let trimmed = (path ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
         let chosen = trimmed.isEmpty ? nil : NSString(string: trimmed).expandingTildeInPath
         if let chosen, !isExecutable(chosen) {
-            throw UsageError.executionFailed("\(chosen) isn't a program ClaudeBar can run. Choose the \(definition.cli ?? name) executable itself.")
+            throw UsageError.executionFailed("\(chosen) isn't a program NabBar can run. Choose the \(definition.cli ?? name) executable itself.")
         }
         let running = try definition.runningCLI(chosen ?? "")
         self.running = running
@@ -177,7 +177,7 @@ public final class Provider {
         var entry = SettingEntry()
         if let kept { setting.keep(kept, in: &entry) }
         guard entry.secrets.isEmpty || vault != nil else {
-            throw UsageError.executionFailed("ClaudeBar can't keep this key securely here.")
+            throw UsageError.executionFailed("NabBar can't keep this key securely here.")
         }
         settings.setValue(entry.values[id], id, forProvider: self.id)
         if entry.secrets.isEmpty {
@@ -226,7 +226,7 @@ public final class Provider {
                     vault?.delete(name, provider: login)
                     if let previous { vault?.save(previous, name, provider: login) }
                 }
-                throw UsageError.executionFailed("ClaudeBar couldn't keep this key securely.")
+                throw UsageError.executionFailed("NabBar couldn't keep this key securely.")
             }
         }
     }
@@ -343,14 +343,14 @@ public final class Provider {
             setting.keep(value, in: &entry)
         }
         guard entry.secrets.isEmpty || vault != nil else {
-            throw UsageError.executionFailed("ClaudeBar can't keep this key securely here.")
+            throw UsageError.executionFailed("NabBar can't keep this key securely here.")
         }
         let config = ProviderAccountConfig(accountId: UUID().uuidString.lowercased(), label: "", probeConfig: entry.values, madeBy: .form)
         let lineupId = config.toProviderAccount(providerId: id).id
         do {
             try keep(entry.secrets, for: lineupId)
         } catch {
-            throw UsageError.executionFailed("ClaudeBar couldn't keep this key securely. The account wasn't added.")
+            throw UsageError.executionFailed("NabBar couldn't keep this key securely. The account wasn't added.")
         }
         guard let account = add(config) else {
             for name in entry.secrets.keys { vault?.delete(name, provider: lineupId) }

@@ -43,12 +43,12 @@ struct AccountsCardText {
 
     func removeMessage(for account: Account) -> String {
         if account.madeBy == .form, signedInFolder(of: account) == nil {
-            return "Removes \(account.displayName) from ClaudeBar and deletes its saved keys."
+            return "Removes \(account.displayName) from NabBar and deletes its saved keys."
         }
         if account.folder?.goesWithAccount == true {
-            return "Removes \(account.displayName) from ClaudeBar and deletes the sign-in ClaudeBar kept for it."
+            return "Removes \(account.displayName) from NabBar and deletes the sign-in NabBar kept for it."
         }
-        return "Removes \(account.displayName) from ClaudeBar. Its login and folder stay where they are."
+        return "Removes \(account.displayName) from NabBar. Its login and folder stay where they are."
     }
 
     /// Whether the last refresh says the login needs signing in again.
