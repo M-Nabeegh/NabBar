@@ -229,5 +229,9 @@ public final class StatusExportDriver {
         } catch {
             try? data.write(to: fileURL, options: .atomic)
         }
+
+        // Touch Portal's button faces, for the providers NabBar shows.
+        let lineup = AppProfile.providerLineup
+        TouchPortalTiles.write(finalPayload.providers.filter { lineup?.contains($0.id) ?? true })
     }
 }
