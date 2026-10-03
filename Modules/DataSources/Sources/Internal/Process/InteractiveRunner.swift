@@ -281,6 +281,7 @@ public struct InteractiveRunner: Sendable {
         var buffer = Data()
         var lastMeaningfulDataTime = Date()
         let idleTimeout: TimeInterval = 3.0  // Exit if no new meaningful data for 3 seconds
+        let readyGrace: TimeInterval = 0.5  // ...or for half a second once the rule calls the screen ready
 
         let promptResponses = options.autoResponses.map {
             (prompt: Data($0.key.utf8), response: Data($0.value.utf8))
@@ -310,6 +311,14 @@ public struct InteractiveRunner: Sendable {
 
             // Exit if process stopped
             if !process.isRunning { break }
+
+            // A screen the rule calls ready holds its data already: a short
+            // quiet spell is enough to catch the rest of that frame.
+            if hasMeaningfulContent(buffer),
+               Date().timeIntervalSince(lastMeaningfulDataTime) > readyGrace,
+               isSettled(buffer, rule: options.completionRule) {
+                break
+            }
 
             // Exit if we have meaningful output and no new meaningful data for
             // idleTimeout — unless the screen says it is still filling in, in
@@ -384,6 +393,11 @@ public struct InteractiveRunner: Sendable {
     ///            `true` if data is non-UTF8 (binary data), `false` otherwise
     /// Whether the captured screen is still filling in under `rule`.
     /// Returns false when there is no rule, so runs without one are unchanged.
+    internal func isSettled(_ data: Data, rule: CLICompletionRule?) -> Bool {
+        guard let rule, let text = String(data: data, encoding: .utf8) else { return false }
+        return rule.isReady(text)
+    }
+
     internal func isAwaitingCompletion(_ data: Data, rule: CLICompletionRule?) -> Bool {
         guard let rule, let text = String(data: data, encoding: .utf8) else { return false }
         return rule.isPending(text)

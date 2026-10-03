@@ -186,6 +186,28 @@ struct InteractiveRunnerTests {
         #expect(result.output.contains("Current session"))
         #expect(result.exitCode == -1)
     }
+
+    @Test
+    func `a screen the rule calls ready ends the capture without the full idle wait`() throws {
+        let runner = InteractiveRunner()
+        // The usage bar is the data itself: once it is on screen, half a second
+        // of quiet is enough, not the 3 seconds a screen without a rule needs.
+        let script = "printf 'Current session\\n1%% used'; sleep 15"
+        let started = Date()
+
+        let result = try runner.run(
+            binary: "/bin/sh",
+            input: "",
+            options: .init(
+                timeout: 20.0,
+                arguments: ["-c", script],
+                completionRule: .claudeUsage
+            )
+        )
+
+        #expect(result.output.contains("1% used"))
+        #expect(Date().timeIntervalSince(started) < 2.5)
+    }
 }
 
 // MARK: - hasMeaningfulContent Tests
