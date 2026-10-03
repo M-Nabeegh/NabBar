@@ -1,14 +1,14 @@
 {
   "sdk": 6,
-  "version": 3,
+  "version": 4,
   "name": "NabBar",
   "id": "com.nabeegh.nabbar.touchportal",
   "configuration": {
     "colorDark": "#1E2125",
     "colorLight": "#4FE3A6"
   },
-  "plugin_start_cmd_mac": "/usr/bin/python3 \"%TP_PLUGIN_FOLDER%NabBar/plugin.py\"",
-  "plugin_start_cmd": "/usr/bin/python3 \"%TP_PLUGIN_FOLDER%NabBar/plugin.py\"",
+  "plugin_start_cmd_mac": "/usr/bin/python3 ./plugin.py",
+  "plugin_start_cmd": "/usr/bin/python3 ./plugin.py",
   "categories": [
     {
       "id": "com.nabeegh.nabbar.touchportal.cat",
