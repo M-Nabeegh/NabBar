@@ -70,28 +70,6 @@ struct ClaudeCredentialTests {
         #expect(snapshot.accountTier == .claudeMax)
     }
 
-    @Test
-    func `the file's refresh token is the one traded`() async throws {
-        let claude = try ClaudeHarness()
-        defer { claude.cleanUp() }
-        try claude.writeCredentials(
-            refreshToken: "my-refresh-token",
-            expiresAt: claude.now.addingTimeInterval(-3600).timeIntervalSince1970 * 1000
-        )
-        given(claude.network).request(.any).willProduce { @Sendable request in
-            if Self.isTokenRequest(request) {
-                let body = request.httpBody.flatMap { try? JSONSerialization.jsonObject(with: $0) as? [String: String] }
-                return body?["refresh_token"] == "my-refresh-token"
-                    ? (Data(#"{ "access_token": "new-token", "expires_in": 3600 }"#.utf8), ClaudeHarness.response(200))
-                    : (Data(#"{"error":"invalid_grant"}"#.utf8), ClaudeHarness.response(400))
-            }
-            return (Data(Self.usageOK.utf8), ClaudeHarness.response(200))
-        }
-
-        _ = try await claude.fetchUsage(try claude.dataSource("api"))
-
-        #expect(try claude.readCredentials()["accessToken"] as? String == "new-token")
-    }
 
     @Test
     func `no key is found when the file's access token is empty`() throws {
@@ -122,60 +100,7 @@ struct ClaudeCredentialTests {
 
     // MARK: - Writing back
 
-    @Test
-    func `a refreshed token written back is the one read next time`() async throws {
-        let claude = try ClaudeHarness()
-        defer { claude.cleanUp() }
-        try claude.writeCredentials(
-            accessToken: "old-token",
-            refreshToken: "old-refresh",
-            expiresAt: claude.now.addingTimeInterval(-3600).timeIntervalSince1970 * 1000
-        )
-        let refreshed = #"{ "access_token": "new-token", "refresh_token": "new-refresh", "expires_in": 3600 }"#
-        let sent = Sent()
-        given(claude.network).request(.any).willProduce { @Sendable request in
-            if Self.isTokenRequest(request) {
-                return (Data(refreshed.utf8), ClaudeHarness.response(200))
-            }
-            sent.authorization = request.value(forHTTPHeaderField: "Authorization")
-            return (Data(Self.usageOK.utf8), ClaudeHarness.response(200))
-        }
-        _ = try await claude.fetchUsage(try claude.dataSource("api"))
 
-        // A new data source reads the file afresh.
-        _ = try await claude.fetchUsage(try claude.dataSource("api"))
-
-        #expect(sent.authorization == "Bearer new-token")
-        let saved = try claude.readCredentials()
-        #expect(saved["accessToken"] as? String == "new-token")
-        #expect(saved["refreshToken"] as? String == "new-refresh")
-    }
-
-    @Test
-    func `writing back keeps the fields ClaudeBar does not read`() async throws {
-        let claude = try ClaudeHarness()
-        defer { claude.cleanUp() }
-        // expiresAt is long past, so the token is refreshed.
-        try claude.writeCredentials(
-            accessToken: "old-token",
-            refreshToken: "old-refresh",
-            expiresAt: 1_748_276_587_173,
-            extra: ["scopes": ["user:inference", "user:profile"]]
-        )
-        given(claude.network).request(.any).willProduce { @Sendable request in
-            Self.isTokenRequest(request)
-                ? (Data(#"{ "access_token": "new-token", "expires_in": 3600 }"#.utf8), ClaudeHarness.response(200))
-                : (Data(Self.usageOK.utf8), ClaudeHarness.response(200))
-        }
-
-        _ = try await claude.fetchUsage(try claude.dataSource("api"))
-
-        let saved = try claude.readCredentials()
-        #expect(saved["accessToken"] as? String == "new-token")
-        #expect(saved["scopes"] as? [String] == ["user:inference", "user:profile"])
-        #expect(saved["expiresAt"] is NSNumber)
-        #expect(saved["expiresAt"] is String == false)
-    }
 
     // MARK: - The Keychain
 

@@ -246,48 +246,29 @@ struct CodexDefinitionTests {
         #expect(codex.lastFailedStep == .lookup)
     }
 
-    @Test
-    func `api refused even after a refresh means log in again`() async throws {
-        let stub = try StubbedProvider(dataSourceKind: "api", providerId: "codex")
-        defer { stub.cleanUp() }
-        try stub.writeCodexAuth()
-        stub.answerHTTP("", status: 401)
-        let codex = try stub.make("codex")
 
-        await #expect(throws: UsageError.sessionExpired()) { try await codex.refresh() }
-    }
 
+
+    // NabBar never refreshes Codex's token: `~/.codex/auth.json` is the
+    // Codex CLI's file, and only the CLI writes it.
     @Test
-    func `api refreshes an old token, uses it, and writes it back`() async throws {
+    func `api never refreshes the token or writes the auth file`() async throws {
         let stub = try StubbedProvider(dataSourceKind: "api", providerId: "codex")
         defer { stub.cleanUp() }
         try stub.writeCodexAuth(token: "old-token", accountId: "acct-1", lastRefresh: Date().addingTimeInterval(-9 * 86400))
+        let authFile = stub.home.appendingPathComponent(".codex/auth.json")
+        let before = try Data(contentsOf: authFile)
         given(stub.network).request(.any).willProduce { @Sendable request in
             if request.url?.absoluteString.contains("oauth/token") == true {
                 return (Data(#"{"access_token":"new-token","refresh_token":"new-refresh-token"}"#.utf8), StubbedProvider.response(200))
             }
-            let authorized = request.value(forHTTPHeaderField: "Authorization") == "Bearer new-token"
-            return (Data(#"{"rate_limit":{"primary_window":{"used_percent":10.0}}}"#.utf8), StubbedProvider.response(authorized ? 200 : 401))
+            return (Data(), StubbedProvider.response(401))
         }
 
-        let usage = try await stub.make("codex").refresh()
+        await #expect(throws: (any Error).self) {
+            try await stub.make("codex").refresh()
+        }
 
-        #expect(usage.quota(for: .session)?.percentRemaining == 90)
-        let tokens = try stub.readCodexAuth()["tokens"] as? [String: Any]
-        #expect(tokens?["access_token"] as? String == "new-token")
-        #expect(tokens?["refresh_token"] as? String == "new-refresh-token")
-        #expect(tokens?["account_id"] as? String == "acct-1")
-    }
-
-    @Test
-    func `an expired refresh token means log in again`() async throws {
-        let stub = try StubbedProvider(dataSourceKind: "api", providerId: "codex")
-        defer { stub.cleanUp() }
-        try stub.writeCodexAuth(lastRefresh: Date().addingTimeInterval(-9 * 86400))
-        stub.answerHTTP(#"{"error":{"code":"refresh_token_expired"}}"#, status: 400)
-        let codex = try stub.make("codex")
-
-        await #expect(throws: UsageError.sessionExpired()) { try await codex.refresh() }
-        #expect(codex.lastFailedStep == .lookup)
+        #expect(try Data(contentsOf: authFile) == before)
     }
 }

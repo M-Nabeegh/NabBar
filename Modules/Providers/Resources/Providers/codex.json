@@ -168,16 +168,6 @@
           "idToken": "$.tokens.id_token",
           "refreshedAt": "$.last_refresh",
           "email": "$.tokens.id_token#jwt.email"
-        },
-        "refresh": {
-          "oauth2": {
-            "tokenURL": "https://auth.openai.com/oauth/token",
-            "clientId": "app_EMoamEEZ73f0CkXaXp7hrann",
-            "every": 691200,
-            "onStatus": [401, 403],
-            "expiredCodes": ["refresh_token_expired", "refresh_token_reused", "refresh_token_invalidated"],
-            "hint": "Run `codex` in terminal to log in again."
-          }
         }
       },
       "fetch": {

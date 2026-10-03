@@ -604,18 +604,6 @@ struct ClaudeAPITests {
 
     // MARK: - Errors
 
-    @Test
-    func `a 401 the refresh cannot fix means the session expired`() async throws {
-        let claude = try ClaudeHarness()
-        defer { claude.cleanUp() }
-        try claude.writeCredentials()
-        // The usage request and the refresh both answer 401.
-        given(claude.network).request(.any).willReturn((Data(), ClaudeHarness.response(401)))
-
-        let error = await failure(of: try claude.dataSource("api"), in: claude)
-
-        #expect(error == .sessionExpired())
-    }
 
     @Test
     func `a 403 that persists after a refresh means authentication is required`() async throws {
@@ -667,169 +655,43 @@ struct ClaudeAPITests {
 
 // MARK: - Token refresh
 
+/// NabBar never refreshes Claude's OAuth token: that would write to the
+/// Keychain item or `~/.claude/.credentials.json` Claude Code owns. The CLI
+/// keeps its own token fresh; an expired one is reported, not renewed.
 @Suite
 struct ClaudeAPITokenRefreshTests {
 
-    private static let usageOK = #"{ "five_hour": { "utilization": 10.0 } }"#
-
-    private static func isTokenRequest(_ request: URLRequest) -> Bool {
-        request.url?.absoluteString.contains("oauth/token") == true
-    }
-
-    private static func bearer(_ request: URLRequest) -> String? {
-        request.value(forHTTPHeaderField: "Authorization")
-    }
-
-    /// Writes `~/.claude/.credentials.json` from inside a `@Sendable` stub.
-    private static func writeCredentials(in home: URL, accessToken: String, refreshToken: String, expiresAt: Double) {
-        let oauth: [String: Any] = ["accessToken": accessToken, "refreshToken": refreshToken, "expiresAt": expiresAt]
-        try? JSONSerialization.data(withJSONObject: ["claudeAiOauth": oauth])
-            .write(to: home.appendingPathComponent(".claude/.credentials.json"))
+    /// Thread-safe count of requests to the OAuth token endpoint.
+    private final class TokenRequests: @unchecked Sendable {
+        private let lock = NSLock()
+        private var count = 0
+        func record() { lock.withLock { count += 1 } }
+        var total: Int { lock.withLock { count } }
     }
 
     @Test
-    func `an expired token is refreshed, used and written back`() async throws {
+    func `an expired token is never refreshed or written back`() async throws {
         let claude = try ClaudeHarness()
         defer { claude.cleanUp() }
-        // Token expired 1 hour ago
         let pastExpiry = claude.now.addingTimeInterval(-3600).timeIntervalSince1970 * 1000
-        try claude.writeCredentials(accessToken: "old-token", expiresAt: pastExpiry, subscriptionType: "claude_max")
-        let refreshResponse = """
-        {
-          "access_token": "new-token",
-          "refresh_token": "new-refresh-token",
-          "expires_in": 3600
-        }
-        """
-        let usageResponse = """
-        { "five_hour": { "utilization": 10.0 } }
-        """
+        try claude.writeCredentials(accessToken: "old-token", expiresAt: pastExpiry, subscriptionType: "claude_pro")
+        let before = try Data(contentsOf: claude.home.appendingPathComponent(".claude/.credentials.json"))
+        let tokenRequests = TokenRequests()
         given(claude.network).request(.any).willProduce { @Sendable request in
-            if Self.isTokenRequest(request) {
-                return (Data(refreshResponse.utf8), ClaudeHarness.response(200))
+            if request.url?.absoluteString.contains("oauth/token") == true {
+                tokenRequests.record()
+                return (Data(#"{"access_token":"new-token","refresh_token":"new-refresh","expires_in":3600}"#.utf8), ClaudeHarness.response(200))
             }
-            // Only the refreshed token gets usage.
-            guard Self.bearer(request) == "Bearer new-token" else { return (Data(), ClaudeHarness.response(500)) }
-            return (Data(usageResponse.utf8), ClaudeHarness.response(200))
+            return (Data(), ClaudeHarness.response(401))
         }
 
-        let snapshot = try await claude.fetchUsage(try claude.dataSource("api"))
-
-        #expect(snapshot.providerId == "claude")
-        #expect(snapshot.quotas.first?.percentRemaining == 90.0)
-        let saved = try claude.readCredentials()
-        #expect(saved["accessToken"] as? String == "new-token")
-        #expect(saved["refreshToken"] as? String == "new-refresh-token")
-        #expect(saved["subscriptionType"] as? String == "claude_max")
-        // Claude Code reads expiresAt as a number of milliseconds.
-        #expect(saved["expiresAt"] is String == false)
-        let expected = Double(Int64((claude.now.timeIntervalSince1970 + 3600) * 1000))
-        #expect((saved["expiresAt"] as? NSNumber)?.doubleValue == expected)
-        // Nothing the CLI does not write is added.
-        #expect(saved["refreshedAt"] == nil)
-    }
-
-    @Test
-    func `a refresh refused with invalid_grant means the session expired`() async throws {
-        let claude = try ClaudeHarness()
-        defer { claude.cleanUp() }
-        let pastExpiry = claude.now.addingTimeInterval(-3600).timeIntervalSince1970 * 1000
-        try claude.writeCredentials(expiresAt: pastExpiry)
-        let errorResponse = """
-        { "error": "invalid_grant", "error_description": "Refresh token has been revoked" }
-        """
-        given(claude.network).request(.any).willReturn((Data(errorResponse.utf8), ClaudeHarness.response(400)))
-
-        do {
-            _ = try await claude.fetchUsage(try claude.dataSource("api"))
-            Issue.record("Expected sessionExpired")
-        } catch let error as UsageError {
-            #expect(error == .sessionExpired())
-        }
-    }
-
-    @Test
-    func `the next fetch recovers once the CLI has written new credentials`() async throws {
-        // Scenario: the stored refresh token is invalid, but the CLI has
-        // re-authenticated and written new credentials to the file.
-        let claude = try ClaudeHarness()
-        defer { claude.cleanUp() }
-        let pastExpiry = claude.now.addingTimeInterval(-3600).timeIntervalSince1970 * 1000
-        try claude.writeCredentials(accessToken: "old-token", expiresAt: pastExpiry)
-        let refreshes = Counter()
-        given(claude.network).request(.any).willProduce { @Sendable request in
-            if Self.isTokenRequest(request) {
-                if refreshes.next() == 1 {
-                    // First refresh attempt: old token is invalid
-                    let errorResponse = """
-                    { "error": "invalid_grant", "error_description": "Refresh token has been revoked" }
-                    """
-                    return (Data(errorResponse.utf8), ClaudeHarness.response(400))
-                }
-                // Second refresh attempt (with fresh file credentials): success
-                let refreshResponse = """
-                { "access_token": "brand-new-token", "refresh_token": "brand-new-refresh", "expires_in": 3600 }
-                """
-                return (Data(refreshResponse.utf8), ClaudeHarness.response(200))
-            }
-            let usageResponse = """
-            { "five_hour": { "utilization": 15.0 } }
-            """
-            return (Data(usageResponse.utf8), ClaudeHarness.response(200))
-        }
-        let source = try claude.dataSource("api")
-
-        do {
-            _ = try await claude.fetchUsage(source)
-            Issue.record("Expected sessionExpired")
-        } catch let error as UsageError {
-            #expect(error == .sessionExpired())
+        await #expect(throws: (any Error).self) {
+            try await claude.fetchUsage(try claude.dataSource("api"))
         }
 
-        // Simulate CLI re-authentication: write new credentials to file
-        let newExpiry = claude.now.addingTimeInterval(-60).timeIntervalSince1970 * 1000
-        try claude.writeCredentials(accessToken: "cli-refreshed-token", refreshToken: "cli-refreshed-refresh", expiresAt: newExpiry)
-
-        let snapshot = try await claude.fetchUsage(source)
-
-        #expect(snapshot.providerId == "claude")
-        #expect(snapshot.quotas.first?.percentRemaining == 85.0)
-        #expect(try claude.readCredentials()["accessToken"] as? String == "brand-new-token")
-    }
-
-    @Test
-    func `a failed refresh uses the token the CLI wrote meanwhile`() async throws {
-        // Scenario: during a single fetch, the refresh fails but the CLI has
-        // updated the file in the meantime with a different access token.
-        let claude = try ClaudeHarness()
-        defer { claude.cleanUp() }
-        let pastExpiry = claude.now.addingTimeInterval(-3600).timeIntervalSince1970 * 1000
-        try claude.writeCredentials(accessToken: "stale-token", expiresAt: pastExpiry)
-        let home = claude.home
-        let futureExpiry = claude.now.addingTimeInterval(3600).timeIntervalSince1970 * 1000
-        let refreshes = Counter()
-        given(claude.network).request(.any).willProduce { @Sendable request in
-            if Self.isTokenRequest(request) {
-                _ = refreshes.next()
-                // Simulate the CLI updating the file concurrently
-                Self.writeCredentials(in: home, accessToken: "brand-new-token", refreshToken: "brand-new-refresh", expiresAt: futureExpiry)
-                let errorResponse = """
-                { "error": "invalid_grant", "error_description": "Token revoked" }
-                """
-                return (Data(errorResponse.utf8), ClaudeHarness.response(400))
-            }
-            guard Self.bearer(request) == "Bearer brand-new-token" else { return (Data(), ClaudeHarness.response(500)) }
-            let usageResponse = """
-            { "five_hour": { "utilization": 20.0 } }
-            """
-            return (Data(usageResponse.utf8), ClaudeHarness.response(200))
-        }
-
-        let snapshot = try await claude.fetchUsage(try claude.dataSource("api"))
-
-        #expect(snapshot.providerId == "claude")
-        #expect(snapshot.quotas.first?.percentRemaining == 80.0)  // 100 - 20
-        #expect(refreshes.next() == 2)  // only one refresh attempt was made before this
+        #expect(tokenRequests.total == 0)
+        let after = try Data(contentsOf: claude.home.appendingPathComponent(".claude/.credentials.json"))
+        #expect(after == before)
     }
 }
 
