@@ -2,8 +2,8 @@ import Foundation
 import Testing
 @testable import Quotas
 
-/// A side-by-side build (NabBar) names its own folder and the
-/// providers it shows in its Info.plist; a plain build names neither.
+/// NabBar's Info.plist names its folder and the providers it shows; without
+/// those keys it still keeps to `~/.nabbar` and shows every provider.
 @Suite
 struct AppProfileTests {
     private let home = FileManager.default.homeDirectoryForCurrentUser
@@ -11,48 +11,48 @@ struct AppProfileTests {
     // MARK: - Home folder
 
     @Test
-    func `a plain build keeps its files in dot claudebar`() {
-        #expect(AppProfile.homeDirectory(info: [:]) == home.appendingPathComponent(".claudebar", isDirectory: true))
-        #expect(AppProfile.homeDirectory(info: nil) == home.appendingPathComponent(".claudebar", isDirectory: true))
+    func `without a folder key the files stay in dot nabbar`() {
+        #expect(AppProfile.homeDirectory(info: [:]) == home.appendingPathComponent(".nabbar", isDirectory: true))
+        #expect(AppProfile.homeDirectory(info: nil) == home.appendingPathComponent(".nabbar", isDirectory: true))
     }
 
     @Test
-    func `a local build keeps its files in the folder it names`() {
-        let info: [String: Any] = [AppProfile.homeDirectoryKey: ".nabbar"]
+    func `a build keeps its files in the folder it names`() {
+        let info: [String: Any] = [AppProfile.homeDirectoryKey: ".nabbar-dev"]
 
-        #expect(AppProfile.homeDirectory(info: info) == home.appendingPathComponent(".nabbar", isDirectory: true))
+        #expect(AppProfile.homeDirectory(info: info) == home.appendingPathComponent(".nabbar-dev", isDirectory: true))
     }
 
     @Test
-    func `an empty folder name falls back to dot claudebar`() {
+    func `an empty folder name falls back to dot nabbar`() {
         let info: [String: Any] = [AppProfile.homeDirectoryKey: ""]
 
-        #expect(AppProfile.homeDirectory(info: info) == home.appendingPathComponent(".claudebar", isDirectory: true))
+        #expect(AppProfile.homeDirectory(info: info) == home.appendingPathComponent(".nabbar", isDirectory: true))
     }
 
     // MARK: - Display name
 
     @Test
-    func `a plain build is called ClaudeBar`() {
-        #expect(AppProfile.displayName(info: [:]) == "ClaudeBar")
-        #expect(AppProfile.displayName(info: ["CFBundleDisplayName": ""]) == "ClaudeBar")
+    func `without a display name the app is called NabBar`() {
+        #expect(AppProfile.displayName(info: [:]) == "NabBar")
+        #expect(AppProfile.displayName(info: ["CFBundleDisplayName": ""]) == "NabBar")
     }
 
     @Test
-    func `a renamed build shows its own display name`() {
-        #expect(AppProfile.displayName(info: ["CFBundleDisplayName": "NabBar"]) == "NabBar")
+    func `the bundle display name wins`() {
+        #expect(AppProfile.displayName(info: ["CFBundleDisplayName": "NabBar Dev"]) == "NabBar Dev")
     }
 
     // MARK: - Provider lineup
 
     @Test
-    func `a plain build has no lineup`() {
+    func `without a lineup key every provider shows`() {
         #expect(AppProfile.providerLineup(info: [:]) == nil)
         #expect(AppProfile.providerLineup(info: [AppProfile.providerLineupKey: [String]()]) == nil)
     }
 
     @Test
-    func `a local build reads its lineup in order`() {
+    func `the lineup is read in order`() {
         let info: [String: Any] = [AppProfile.providerLineupKey: ["codex", "claude", "commandcode"]]
 
         #expect(AppProfile.providerLineup(info: info) == ["codex", "claude", "commandcode"])

@@ -2,23 +2,21 @@ import Foundation
 
 /// Which build of the app this is, read from its Info.plist.
 ///
-/// A plain build has no profile keys and behaves as always: it keeps its files in
-/// `~/.claudebar` and shows every provider. A side-by-side build (NabBar)
-/// names its own folder, so it never reads or writes the installed app's settings,
-/// and may name the providers it shows, in the order it shows them.
+/// NabBar's Info.plist names its folder (`~/.nabbar`) and the providers it shows,
+/// in order. Without those keys the folder is still `~/.nabbar`, so NabBar never
+/// reads or writes an installed ClaudeBar's `~/.claudebar`, and every provider shows.
 public enum AppProfile {
     /// Info.plist key naming the folder under `~` that holds settings, status and history.
-    public static let homeDirectoryKey = "ClaudeBarHomeDirectory"
+    public static let homeDirectoryKey = "NabBarHomeDirectory"
     /// Info.plist key listing the provider ids this build shows, in order.
-    public static let providerLineupKey = "ClaudeBarProviderLineup"
+    public static let providerLineupKey = "NabBarProviderLineup"
 
-    /// The name shown in the app's own header: the bundle's display name
-    /// (NabBar for that build), ClaudeBar otherwise.
+    /// The name shown in the app's own header: the bundle's display name, else NabBar.
     public static var displayName: String {
         displayName(info: Bundle.main.infoDictionary)
     }
 
-    /// `~/.claudebar`, or the folder this build's Info.plist names.
+    /// `~/.nabbar`, or the folder this build's Info.plist names.
     public static var homeDirectory: URL {
         homeDirectory(info: Bundle.main.infoDictionary)
     }
@@ -29,11 +27,11 @@ public enum AppProfile {
     }
 
     static func displayName(info: [String: Any]?) -> String {
-        (info?["CFBundleDisplayName"] as? String).flatMap { $0.isEmpty ? nil : $0 } ?? "ClaudeBar"
+        (info?["CFBundleDisplayName"] as? String).flatMap { $0.isEmpty ? nil : $0 } ?? "NabBar"
     }
 
     static func homeDirectory(info: [String: Any]?) -> URL {
-        let name = (info?[homeDirectoryKey] as? String).flatMap { $0.isEmpty ? nil : $0 } ?? ".claudebar"
+        let name = (info?[homeDirectoryKey] as? String).flatMap { $0.isEmpty ? nil : $0 } ?? ".nabbar"
         return FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent(name, isDirectory: true)
     }
 
