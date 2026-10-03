@@ -17,6 +17,11 @@ public final class StatusExportDriver {
             public let percentUsed: Double?
             public let resetsAt: String?
             public let resetText: String?
+            /// The weekly window, when the provider has one. Absent from the
+            /// JSON otherwise, so readers of the older schema see no change.
+            public let weeklyPercentRemaining: Double?
+            public let weeklyResetsAt: String?
+            public let weeklyResetText: String?
 
             public init(
                 id: String,
@@ -25,7 +30,10 @@ public final class StatusExportDriver {
                 percentRemaining: Double? = nil,
                 percentUsed: Double? = nil,
                 resetsAt: String? = nil,
-                resetText: String? = nil
+                resetText: String? = nil,
+                weeklyPercentRemaining: Double? = nil,
+                weeklyResetsAt: String? = nil,
+                weeklyResetText: String? = nil
             ) {
                 self.id = id
                 self.name = name
@@ -34,6 +42,9 @@ public final class StatusExportDriver {
                 self.percentUsed = percentUsed
                 self.resetsAt = resetsAt
                 self.resetText = resetText
+                self.weeklyPercentRemaining = weeklyPercentRemaining
+                self.weeklyResetsAt = weeklyResetsAt
+                self.weeklyResetText = weeklyResetText
             }
         }
 
@@ -143,18 +154,14 @@ public final class StatusExportDriver {
             statusString = "unknown"
         }
 
-        let isoFormatter = ISO8601DateFormatter()
         let providers = monitor.enabledProviders.map { provider in
             let snapshot = monitor.usage(of: provider)
-            let primary = snapshot?.quotas.first ?? snapshot?.lowestQuota
-            return ExportPayload.ProviderSummary(
+            return Self.summary(
                 id: provider.id,
                 name: provider.name,
                 status: statusName(snapshot?.overallStatus(under: settings.statusPolicy) ?? .healthy),
-                percentRemaining: primary?.percentRemaining,
-                percentUsed: primary?.percentUsed,
-                resetsAt: primary?.resetsAt.map { isoFormatter.string(from: $0) },
-                resetText: primary?.resetText
+                quotas: snapshot?.quotas ?? [],
+                lowest: snapshot?.lowestQuota
             )
         }
 
@@ -166,6 +173,32 @@ public final class StatusExportDriver {
             selectedProviderId: monitor.selectedProviderId,
             selectedProviderName: selected?.name,
             providers: providers
+        )
+    }
+
+    /// One provider's line: its first window (or its lowest, when the order
+    /// gives none) and its weekly window.
+    nonisolated static func summary(
+        id: String,
+        name: String,
+        status: String,
+        quotas: [UsageQuota],
+        lowest: UsageQuota? = nil
+    ) -> ExportPayload.ProviderSummary {
+        let isoFormatter = ISO8601DateFormatter()
+        let primary = quotas.first ?? lowest
+        let weekly = quotas.first { $0.quotaType == .weekly }
+        return ExportPayload.ProviderSummary(
+            id: id,
+            name: name,
+            status: status,
+            percentRemaining: primary?.percentRemaining,
+            percentUsed: primary?.percentUsed,
+            resetsAt: primary?.resetsAt.map { isoFormatter.string(from: $0) },
+            resetText: primary?.resetText,
+            weeklyPercentRemaining: weekly?.percentRemaining,
+            weeklyResetsAt: weekly?.resetsAt.map { isoFormatter.string(from: $0) },
+            weeklyResetText: weekly?.resetText
         )
     }
 
