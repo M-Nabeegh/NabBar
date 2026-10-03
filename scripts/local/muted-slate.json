@@ -1,0 +1,140 @@
+{
+  "scheme": {
+    "name": "Muted Slate",
+    "background": {
+      "red": 0.1176,
+      "green": 0.1294,
+      "blue": 0.1451,
+      "alpha": 1.0
+    },
+    "foreground": {
+      "red": 0.7804,
+      "green": 0.7961,
+      "blue": 0.8196,
+      "alpha": 1.0
+    },
+    "boldText": {
+      "red": 0.8667,
+      "green": 0.8784,
+      "blue": 0.8941,
+      "alpha": 1.0
+    },
+    "cursor": {
+      "red": 0.5255,
+      "green": 0.6392,
+      "blue": 0.6314,
+      "alpha": 1.0
+    },
+    "selection": {
+      "red": 0.2275,
+      "green": 0.2471,
+      "blue": 0.2784,
+      "alpha": 1.0
+    },
+    "selectionText": {
+      "red": 0.8667,
+      "green": 0.8784,
+      "blue": 0.8941,
+      "alpha": 1.0
+    },
+    "ansiColors": [
+      {
+        "red": 0.1412,
+        "green": 0.1529,
+        "blue": 0.1725,
+        "alpha": 1.0
+      },
+      {
+        "red": 0.6902,
+        "green": 0.4902,
+        "blue": 0.4902,
+        "alpha": 1.0
+      },
+      {
+        "red": 0.5608,
+        "green": 0.651,
+        "blue": 0.5569,
+        "alpha": 1.0
+      },
+      {
+        "red": 0.7333,
+        "green": 0.6627,
+        "blue": 0.498,
+        "alpha": 1.0
+      },
+      {
+        "red": 0.5059,
+        "green": 0.5765,
+        "blue": 0.6667,
+        "alpha": 1.0
+      },
+      {
+        "red": 0.6118,
+        "green": 0.5451,
+        "blue": 0.651,
+        "alpha": 1.0
+      },
+      {
+        "red": 0.5255,
+        "green": 0.6392,
+        "blue": 0.6314,
+        "alpha": 1.0
+      },
+      {
+        "red": 0.7255,
+        "green": 0.7412,
+        "blue": 0.7686,
+        "alpha": 1.0
+      },
+      {
+        "red": 0.2902,
+        "green": 0.3098,
+        "blue": 0.3412,
+        "alpha": 1.0
+      },
+      {
+        "red": 0.7529,
+        "green": 0.5608,
+        "blue": 0.5608,
+        "alpha": 1.0
+      },
+      {
+        "red": 0.6235,
+        "green": 0.7098,
+        "blue": 0.6196,
+        "alpha": 1.0
+      },
+      {
+        "red": 0.7843,
+        "green": 0.7216,
+        "blue": 0.5608,
+        "alpha": 1.0
+      },
+      {
+        "red": 0.5765,
+        "green": 0.6431,
+        "blue": 0.7294,
+        "alpha": 1.0
+      },
+      {
+        "red": 0.6745,
+        "green": 0.6118,
+        "blue": 0.7098,
+        "alpha": 1.0
+      },
+      {
+        "red": 0.5922,
+        "green": 0.698,
+        "blue": 0.6902,
+        "alpha": 1.0
+      },
+      {
+        "red": 0.8275,
+        "green": 0.8392,
+        "blue": 0.8588,
+        "alpha": 1.0
+      }
+    ]
+  },
+  "importedAt": 0
+}

@@ -1,0 +1,118 @@
+{
+  "sdk": 6,
+  "version": 1,
+  "name": "NabBar",
+  "id": "com.nabeegh.nabbar.touchportal",
+  "configuration": {
+    "colorDark": "#2B2D31",
+    "colorLight": "#8A8F98"
+  },
+  "plugin_start_cmd_mac": "/usr/bin/python3 \"%TP_PLUGIN_FOLDER%NabBar/plugin.py\"",
+  "plugin_start_cmd": "/usr/bin/python3 \"%TP_PLUGIN_FOLDER%NabBar/plugin.py\"",
+  "categories": [
+    {
+      "id": "com.nabeegh.nabbar.touchportal.cat",
+      "name": "NabBar",
+      "actions": [],
+      "events": [],
+      "states": [
+        {
+          "id": "com.nabeegh.nabbar.touchportal.state.codex.left",
+          "type": "text",
+          "desc": "NabBar: Codex % left",
+          "default": "--"
+        },
+        {
+          "id": "com.nabeegh.nabbar.touchportal.state.codex.used",
+          "type": "text",
+          "desc": "NabBar: Codex % used",
+          "default": "--"
+        },
+        {
+          "id": "com.nabeegh.nabbar.touchportal.state.codex.reset",
+          "type": "text",
+          "desc": "NabBar: Codex reset time",
+          "default": ""
+        },
+        {
+          "id": "com.nabeegh.nabbar.touchportal.state.codex.status",
+          "type": "text",
+          "desc": "NabBar: Codex status",
+          "default": ""
+        },
+        {
+          "id": "com.nabeegh.nabbar.touchportal.state.codex.summary",
+          "type": "text",
+          "desc": "NabBar: Codex summary (name + % left)",
+          "default": ""
+        },
+        {
+          "id": "com.nabeegh.nabbar.touchportal.state.claude.left",
+          "type": "text",
+          "desc": "NabBar: Claude % left",
+          "default": "--"
+        },
+        {
+          "id": "com.nabeegh.nabbar.touchportal.state.claude.used",
+          "type": "text",
+          "desc": "NabBar: Claude % used",
+          "default": "--"
+        },
+        {
+          "id": "com.nabeegh.nabbar.touchportal.state.claude.reset",
+          "type": "text",
+          "desc": "NabBar: Claude reset time",
+          "default": ""
+        },
+        {
+          "id": "com.nabeegh.nabbar.touchportal.state.claude.status",
+          "type": "text",
+          "desc": "NabBar: Claude status",
+          "default": ""
+        },
+        {
+          "id": "com.nabeegh.nabbar.touchportal.state.claude.summary",
+          "type": "text",
+          "desc": "NabBar: Claude summary (name + % left)",
+          "default": ""
+        },
+        {
+          "id": "com.nabeegh.nabbar.touchportal.state.commandcode.left",
+          "type": "text",
+          "desc": "NabBar: Command Code % left",
+          "default": "--"
+        },
+        {
+          "id": "com.nabeegh.nabbar.touchportal.state.commandcode.used",
+          "type": "text",
+          "desc": "NabBar: Command Code % used",
+          "default": "--"
+        },
+        {
+          "id": "com.nabeegh.nabbar.touchportal.state.commandcode.reset",
+          "type": "text",
+          "desc": "NabBar: Command Code reset time",
+          "default": ""
+        },
+        {
+          "id": "com.nabeegh.nabbar.touchportal.state.commandcode.status",
+          "type": "text",
+          "desc": "NabBar: Command Code status",
+          "default": ""
+        },
+        {
+          "id": "com.nabeegh.nabbar.touchportal.state.commandcode.summary",
+          "type": "text",
+          "desc": "NabBar: Command Code summary (name + % left)",
+          "default": ""
+        },
+        {
+          "id": "com.nabeegh.nabbar.touchportal.state.updatedAt",
+          "type": "text",
+          "desc": "NabBar: last updated",
+          "default": ""
+        }
+      ]
+    }
+  ]
+}
