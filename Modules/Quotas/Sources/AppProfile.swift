@@ -10,6 +10,8 @@ public enum AppProfile {
     public static let homeDirectoryKey = "NabBarHomeDirectory"
     /// Info.plist key listing the provider ids this build shows, in order.
     public static let providerLineupKey = "NabBarProviderLineup"
+    /// Info.plist key listing the provider ids sent to Notify!, in order.
+    public static let notifyProvidersKey = "NabBarNotifyProviders"
 
     /// The name shown in the app's own header: the bundle's display name, else NabBar.
     public static var displayName: String {
@@ -28,6 +30,16 @@ public enum AppProfile {
 
     static func displayName(info: [String: Any]?) -> String {
         (info?["CFBundleDisplayName"] as? String).flatMap { $0.isEmpty ? nil : $0 } ?? "NabBar"
+    }
+
+    /// The providers sent to Notify!, in order; nil sends every enabled one.
+    public static var notifyProviders: [String]? {
+        notifyProviders(info: Bundle.main.infoDictionary)
+    }
+
+    static func notifyProviders(info: [String: Any]?) -> [String]? {
+        guard let ids = info?[notifyProvidersKey] as? [String], !ids.isEmpty else { return nil }
+        return ids
     }
 
     static func homeDirectory(info: [String: Any]?) -> URL {

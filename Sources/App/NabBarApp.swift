@@ -283,7 +283,9 @@ struct NabBarApp: App {
         // touches no AppKit window and has nothing to wait for.
         notifyDriver = NotifyPublishDriver(
             monitor: monitor,
-            settings: AppSettings.shared
+            settings: AppSettings.shared,
+            // A named set of providers gets one chip each, 5h and 7d together.
+            builder: NotifyPayloadBuilder(pairsWindowsByProvider: AppProfile.notifyProviders != nil)
         )
         notifyDriver.start()
 

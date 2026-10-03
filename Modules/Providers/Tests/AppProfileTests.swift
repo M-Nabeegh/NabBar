@@ -52,6 +52,12 @@ struct AppProfileTests {
     }
 
     @Test
+    func `the providers sent to Notify are read in order`() {
+        #expect(AppProfile.notifyProviders(info: [AppProfile.notifyProvidersKey: ["claude", "codex"]]) == ["claude", "codex"])
+        #expect(AppProfile.notifyProviders(info: [:]) == nil)
+    }
+
+    @Test
     func `the lineup is read in order`() {
         let info: [String: Any] = [AppProfile.providerLineupKey: ["codex", "claude", "commandcode"]]
 

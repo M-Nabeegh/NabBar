@@ -48,6 +48,11 @@
         <string>claude</string>
         <string>commandcode</string>
     </array>
+    <key>NabBarNotifyProviders</key>
+    <array>
+        <string>claude</string>
+        <string>codex</string>
+    </array>
     <key>CFBundleURLTypes</key>
     <array>
         <dict>

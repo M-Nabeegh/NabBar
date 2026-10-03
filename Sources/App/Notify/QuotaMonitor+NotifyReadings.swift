@@ -16,7 +16,7 @@ extension QuotaMonitor {
     /// `Sendable` readings `NotifyPayloadBuilder` takes. Being `@MainActor` by
     /// inheritance is exactly right: the caller is a driver on the main actor.
     func notifyReadings() -> [NotifyQuotaReading] {
-        enabledProviders.flatMap { provider in
+        let all = enabledProviders.flatMap { provider in
             (usage(of: provider)?.quotas ?? []).map { quota in
                 NotifyQuotaReading(
                     providerId: provider.id,
@@ -24,6 +24,12 @@ extension QuotaMonitor {
                     quota: quota
                 )
             }
+        }
+        // NabBar names the providers its phone widget shows: their 5h and 7d
+        // windows, in that order.
+        guard let wanted = AppProfile.notifyProviders else { return all }
+        return wanted.flatMap { id in
+            all.filter { $0.providerId == id && [.session, .weekly].contains($0.quota.quotaType) }
         }
     }
 }
