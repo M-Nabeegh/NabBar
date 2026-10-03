@@ -3,7 +3,7 @@ import Foundation
 import AppKit
 #endif
 
-/// File-based logger that writes to ~/Library/Logs/ClaudeBar/ClaudeBar.log
+/// File-based logger that writes to ~/Library/Logs/NabBar/NabBar.log
 /// Provides user-accessible logs for debugging and support.
 ///
 /// Thread-safety: All file operations are serialized on a dedicated dispatch queue.
@@ -24,10 +24,10 @@ public final class FileLogger: @unchecked Sendable {
     }
     
     private init() {
-        // ~/Library/Logs/ClaudeBar/ClaudeBar.log
+        // ~/Library/Logs/NabBar/NabBar.log
         let logsDir = FileManager.default.urls(for: .libraryDirectory, in: .userDomainMask).first!
             .appendingPathComponent("Logs", isDirectory: true)
-            .appendingPathComponent("ClaudeBar", isDirectory: true)
+            .appendingPathComponent("NabBar", isDirectory: true)
         
         // Create directory if needed
         // Note: Can't use AppLog here as FileLogger is used by AppLog (circular dependency)
@@ -37,7 +37,7 @@ public final class FileLogger: @unchecked Sendable {
             NSLog("[FileLogger] Failed to create logs directory at %@: %@", logsDir.path, error.localizedDescription)
         }
         
-        self.fileURL = logsDir.appendingPathComponent("ClaudeBar.log")
+        self.fileURL = logsDir.appendingPathComponent("NabBar.log")
     }
     
     /// Creates a thread-safe timestamp string.
