@@ -48,7 +48,9 @@ elif grep -q '"NabBar Local"' <<<"$identities"; then
 else
   SIGN_IDENTITY=$(security find-identity -v -p codesigning 2>/dev/null | awk '/"Apple Development: /{print $2; exit}')
 fi
-if [[ -n "$SIGN_IDENTITY" ]]; then
+if [[ "$SIGN_IDENTITY" == "-" ]]; then
+  echo "==> Ad-hoc signing (asked for)"
+elif [[ -n "$SIGN_IDENTITY" ]]; then
   echo "==> Signing with a stable identity"
 else
   echo "==> Ad-hoc signing (no certificate found; macOS will ask for Keychain access after each rebuild)"
