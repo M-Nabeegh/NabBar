@@ -1,153 +1,154 @@
-# <img src="docs/nabbar-icon.png" width="40" height="40" valign="middle" alt=""> NabBar
+<p align="center">
+  <img src="docs/nabbar-icon.png" width="96" height="96" alt="NabBar icon">
+</p>
 
-[![CI](https://github.com/M-Nabeegh/NabBar/actions/workflows/ci.yml/badge.svg)](https://github.com/M-Nabeegh/NabBar/actions/workflows/ci.yml)
+<h1 align="center">NabBar</h1>
 
-A macOS menu bar app that shows how much of your Codex, Claude and Command Code usage is left.
+<p align="center">
+  Your Codex, Claude and Command Code limits in the macOS menu bar,<br>
+  on a Touch Portal deck, and on your iPhone's Home Screen.
+</p>
 
-<img src="docs/menubar.png" width="354" alt="Menu bar showing Claude 87% and Codex 84%">
+<p align="center">
+  <a href="https://github.com/M-Nabeegh/NabBar/releases/latest/download/NabBar.dmg"><b>Download NabBar for Mac (.dmg)</b></a>
+  &nbsp;·&nbsp;
+  <a href="https://github.com/M-Nabeegh/NabBar/releases/latest">All releases</a>
+  &nbsp;·&nbsp;
+  <a href="https://github.com/M-Nabeegh/NabBar/actions/workflows/ci.yml"><img src="https://github.com/M-Nabeegh/NabBar/actions/workflows/ci.yml/badge.svg" alt="CI" valign="middle"></a>
+</p>
 
-It is a trimmed-down build of [ClaudeBar](https://github.com/tddworks/ClaudeBar) by TDDWorks.
-ClaudeBar tracks 20 providers; NabBar tracks three, keeps its own settings, and can run next to an
-installed ClaudeBar without touching it.
+<p align="center">
+  <img src="docs/menubar.png" width="354" alt="Menu bar: Claude 87%, Codex 84%">
+</p>
 
-## What it shows
+---
 
-For each of Codex, Claude and Command Code:
+## What you get
 
-- percent left in the current window, and when it resets
-- the same numbers in the menu bar, coloured by how much is left
-- weekly limits and model-specific limits where the provider reports them
+- **Menu bar.** The percent left for each tool, coloured green above 50%, yellow from 20 to 50%,
+  red under 20%. Click it for each tool's 5-hour and weekly limits and when they reset.
+- **Touch Portal.** A ready-made button face for each tool: logo, the 5-hour number in its colour,
+  the reset time and a weekly bar.
 
-It refreshes every 5 minutes, or when you click Refresh.
+  <img src="docs/touchportal-tiles.png" width="420" alt="Touch Portal tiles for Claude and Codex">
 
-| Left | Colour |
-|---|---|
-| more than 50% | green |
-| 20% to 50% | yellow |
-| under 20% | red |
-| 0% | dark red |
+- **iPhone.** A Home Screen widget, through the [Notify!](https://getnotifyapp.com) app, with Claude
+  and Codex side by side: `Claude 5h · 7d  44 · 80%`.
+- **Alerts.** A macOS notification when a limit drops into yellow, red or runs out.
 
-The colours can be changed in Settings → Appearance → Status Colors.
+It checks every 5 minutes, or when you click Refresh. Claude takes about 3 seconds.
 
 ## Install
 
-You need macOS 15 or later, Xcode, and [Tuist](https://tuist.dev) (`brew install tuist`).
+1. [Download `NabBar.dmg`](https://github.com/M-Nabeegh/NabBar/releases/latest/download/NabBar.dmg),
+   open it, and drag **NabBar** onto **Applications**.
+2. Open NabBar. macOS says it can't verify the developer, because NabBar isn't notarized by Apple.
+   Click **Done**, then go to **System Settings → Privacy & Security**, scroll down to
+   "NabBar was blocked", and click **Open Anyway**. You only do this once.
+3. NabBar appears in the menu bar. It has no Dock icon.
 
-```bash
-git clone https://github.com/M-Nabeegh/NabBar.git
-cd NabBar
-scripts/build-local.sh --install
-```
+Needs macOS 15 or later on Apple silicon.
 
-This builds the app, signs it ad hoc, checks the signature, and copies it to
-`/Applications/NabBar.app`. There are no prebuilt releases and no auto-update: to update, pull and
-run the script again.
+## Set up each tool
 
-## Set up each provider
+NabBar reads usage from the tools you already use. It never logs in for you and never changes their
+logins.
 
-NabBar reads usage from the tools you already use. It never logs in for you.
-
-**Claude.** Uses the `claude` CLI. It must be logged in and past its first-run screens:
-
-```bash
-claude auth login
-claude    # pick a theme, then /exit
-```
-
-If the CLI is not logged in, NabBar shows "Authentication required".
-
-**Codex.** Uses the Codex CLI. If you only have the copy inside the ChatGPT app, the install
-script points NabBar at it. Click Refresh once after installing; until then NabBar won't run the
-CLI in the background.
-
-**Command Code.** Works once you are logged in to Command Code.
-
-## Alerts
-
-NabBar sends a macOS notification when a provider drops into yellow, red or empty. If you declined
-the permission prompt, turn it on in System Settings → Notifications → NabBar.
+| Tool | What NabBar needs |
+|---|---|
+| **Claude** | The `claude` CLI, logged in and past its first-run screens: run `claude auth login`, then `claude` once and pick a theme. |
+| **Codex** | The Codex CLI. If you only have the copy inside the ChatGPT app, open NabBar → Settings → Providers → Codex, click **Choose…**, and pick `/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS/codex`. Then click **Refresh** once. |
+| **Command Code** | Be logged in to Command Code. |
 
 ## Touch Portal
 
-The install script also writes `build/local/NabBar.tpp`. Import it in Touch Portal → Settings →
-Plug-ins. It adds these states for `codex`, `claude` and `commandcode`
-(prefix `com.nabeegh.nabbar.touchportal.state.<id>.`):
+Download `NabBar-TouchPortal.tpp` from the
+[latest release](https://github.com/M-Nabeegh/NabBar/releases/latest) and import it in
+Touch Portal → Settings → Plug-ins.
+
+For a button like the ones above: add **Change icon from plugin state**, pick
+**NabBar: Claude tile** (or Codex), and leave the button text empty. Add the action
+**NabBar → Refresh NabBar now** to a button to refresh from the deck.
+
+Every value the plugin publishes, per tool (`codex`, `claude`, `commandcode`), under
+`com.nabeegh.nabbar.touchportal.state.<tool>.`:
 
 | State | Example |
 |---|---|
-| `left`, `used`, `reset` | `44%`, `56%`, `Resets in 34m` (the 5-hour window) |
+| `tile` | the finished button face shown above |
+| `left`, `used`, `reset` | `44%`, `56%`, `Resets in 34m` (5-hour window) |
 | `weekLeft`, `weekReset` | `80%`, `Resets Oct 5 at 9pm` |
 | `summary` | `Claude` / `5h 44% · 7d 80%` |
-| `level`, `weekLevel` | `green`, `yellow`, `red` or `depleted` |
-| `icon` | two bars along the bottom, 5-hour and weekly, each filled to its percent left in its level's colour; the top is left clear for button text |
-| `tile` | a finished button face NabBar draws: logo, name, the 5-hour percentage large in its colour, reset time and a weekly bar |
+| `level`, `weekLevel` | `green`, `yellow`, `red` or `depleted`, with matching events for button colours |
+| `icon` | two plain bars, 5-hour and weekly, for buttons that show their own text |
 
-Common setups:
+The plugin reads `~/.nabbar/status.json` and the tile images next to it, and talks only to Touch
+Portal on your Mac.
 
-- Button text that follows the numbers: set the text to the `summary` state.
-- Button colour that follows the level: add the event "NabBar: Claude level" (or "Claude weekly
-  level"), choose a value, and change the button's background in that event.
-- A finished, designed button: "Change icon from plugin state" with the `tile` state, and no button text.
-- A simple live meter instead: the same with the `icon` state.
-- A refresh button: the action "Refresh NabBar now".
+## iPhone widget
 
-## iPhone
+1. Install [Notify!](https://getnotifyapp.com) on the iPhone and turn on Settings → Home Screen
+   Widgets in it.
+2. Copy your device link from Notify!.
+3. In NabBar → Settings → Notify!, paste the link, press **Save Link**, then turn on
+   **Publish to Notify!**. Leave only **Home Screen widget** on if you don't want a Live Activity.
+4. Add the Notify! widget from the iOS widget picker (medium size fits both tools). iOS redraws it
+   about every 15 minutes.
 
-NabBar can push your numbers to an iPhone Home Screen widget through the third-party
-[Notify!](https://getnotifyapp.com) app. The widget shows one chip each for Claude and Codex, with
-the 5-hour and weekly windows side by side (`Claude 5h · 7d  44 · 80%`), so it fits the medium
-size. Which providers it shows is set by `NabBarNotifyProviders` in `Sources/App/Info.plist`.
-
-1. Install Notify! on the iPhone and turn on Settings → Home Screen Widgets in it.
-2. Copy the device link from Notify!.
-3. In NabBar → Settings → Notify!, paste the link, press Save Link, and turn on Publish to Notify!.
-   Leave only Home Screen widget switched on if you don't want a Live Activity.
-4. Add the Notify! widget from the iOS widget picker. iOS redraws it about every 15 minutes.
-
-## What it reads and sends
+## What NabBar reads and sends
 
 Reads, never writes:
 
 - **Claude:** the output of `claude /usage`; `~/.claude.json` for your account email and plan;
   Claude Code's session logs in `~/.claude/projects` for daily cost and token counts. If the CLI
-  check fails, it falls back to Anthropic's usage API with the token in the
-  "Claude Code-credentials" Keychain item.
-- **Codex:** the output of the Codex CLI (`codex app-server`). An optional API mode in Settings
-  reads `~/.codex/auth.json` instead.
+  check fails, it asks Anthropic's usage API with the token in the "Claude Code-credentials"
+  Keychain item.
+- **Codex:** the output of the Codex CLI. An optional API mode in Settings reads
+  `~/.codex/auth.json` instead.
 - **Command Code:** the token in `~/.commandcode/auth.json`, sent to Command Code's own API.
 
-NabBar never refreshes or rewrites any of those tokens. When one expires, it tells you to log in
-again with that tool.
+NabBar never refreshes or rewrites those tokens. When one expires, it tells you to log in again with
+that tool.
 
-Writes:
+Writes only its own files: `~/.nabbar` (settings, `status.json`, tiles, history),
+`~/Library/Logs/NabBar/NabBar.log` (never contains tokens), and one key in `~/.claude.json` that
+marks NabBar's working folder as trusted so the Claude CLI runs there.
 
-- its own files in `~/.nabbar`: settings, `status.json` and usage history
-- its log, `~/Library/Logs/NabBar/NabBar.log`, which never contains tokens or keys
-- one key in `~/.claude.json`, marking its own working folder
-  (`~/Library/Application Support/NabBar/Probe`) as trusted so the CLI runs there
-
-Sends, only if you turn on Notify!: provider names, percentages and reset times, to
+Sends, only if you turn on Notify!: tool names, percentages and reset times, to
 `push.getnotifyapp.com`.
 
-It does not touch `~/.claudebar` or `/Applications/ClaudeBar.app`.
+NabBar runs alongside [ClaudeBar](https://github.com/tddworks/ClaudeBar) without touching its app or
+its `~/.claudebar` folder.
 
-## Development
+## Build from source
+
+Needs Xcode and [Tuist](https://tuist.dev) (`brew install tuist`).
 
 ```bash
-tuist install
-tuist generate --no-open
+git clone https://github.com/M-Nabeegh/NabBar.git
+cd NabBar
+scripts/build-local.sh --install   # build, sign, install to /Applications
+scripts/make-dmg.sh                # or package build/release/NabBar.dmg
+```
+
+`build-local.sh` signs with your Apple Development certificate when you have one, so macOS
+remembers its Keychain permission across rebuilds; otherwise it signs ad hoc.
+
+Tests:
+
+```bash
+tuist install && tuist generate --no-open
 xcodebuild test -workspace NabBar.xcworkspace -scheme NabBar-Workspace \
   -destination 'platform=macOS,arch=arm64' \
   -only-testing:ProvidersTests -only-testing:DomainTests -only-testing:DataSourcesTests \
   -only-testing:InfrastructureTests -only-testing:AppTests
 ```
 
-CI runs the same tests on every push. Bedrock support needs the AWS SDK, which is left out; set
-`TUIST_NABBAR_WITH_AWS=1` before `tuist install` to include it. The icon is drawn by
-`swift scripts/local/draw-icon.swift out.png`.
+Bedrock support needs the AWS SDK, which is left out; set `TUIST_NABBAR_WITH_AWS=1` before
+`tuist install` to include it.
 
 ## Credits
 
 Built on [ClaudeBar](https://github.com/tddworks/ClaudeBar), © 2025 TDDWorks and contributors, MIT.
-ClaudeBar's original README is in [docs/CLAUDEBAR_README.md](docs/CLAUDEBAR_README.md).
-NabBar's changes are © 2026 M. Nabeegh, also MIT. See [LICENSE](LICENSE).
+Its original README is in [docs/CLAUDEBAR_README.md](docs/CLAUDEBAR_README.md). NabBar's changes are
+© 2026 M. Nabeegh, also MIT. See [LICENSE](LICENSE).
