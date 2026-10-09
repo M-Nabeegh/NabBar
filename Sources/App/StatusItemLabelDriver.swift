@@ -27,6 +27,7 @@ final class StatusItemLabelDriver {
     private let monitor: QuotaMonitor
     private let settings: AppSettings
     private let sessionMonitor: SessionMonitor
+    private let activityMonitor: AgentActivityMonitor?
 
     private var statusItem: NSStatusItem?
     private var labelSync: ObservationRenderSync<LabelContent>?
@@ -57,7 +58,9 @@ final class StatusItemLabelDriver {
     private var lastLabelSelection: [String]?
     private var imageWipeObservation: NSKeyValueObservation?
 
-    init(monitor: QuotaMonitor, settings: AppSettings, sessionMonitor: SessionMonitor) {
+    init(monitor: QuotaMonitor, settings: AppSettings, sessionMonitor: SessionMonitor,
+         activityMonitor: AgentActivityMonitor? = nil) {
+        self.activityMonitor = activityMonitor
         self.monitor = monitor
         self.settings = settings
         self.sessionMonitor = sessionMonitor
@@ -81,6 +84,8 @@ final class StatusItemLabelDriver {
         var accountNames: [String: String] = [:]
         var fallbackStatus: QuotaStatus
         var sessionPhase: ClaudeSession.Phase?
+        /// Claude Code's and Codex's activity, by provider id: a dot on its logo.
+        var activities: [String: AgentActivity] = [:]
         var themeModeId: String
         /// Whether a dual-window label should render as two stacked smaller
         /// lines instead of one long "A | B" line (opt-in setting).
@@ -239,6 +244,7 @@ final class StatusItemLabelDriver {
             accountNames: settings.menuBarAccountLabelsEnabled ? accountNames : [:],
             fallbackStatus: effectiveSelectedProviderStatus,
             sessionPhase: sessionMonitor.activeSession?.phase,
+            activities: activityMonitor?.activities ?? [:],
             themeModeId: settings.themeMode,
             stacked: settings.menuBarStackedEnabled,
             stackedSize: settings.menuBarStackedSize,
@@ -336,7 +342,8 @@ final class StatusItemLabelDriver {
         }
 
         if let providerId = content.primaryProviderId {
-            parts.append(providerIcon(for: providerId, native: content.nativeMenuBarIconsEnabled, dark: content.isDarkAppearance))
+            parts.append(badged(providerIcon(for: providerId, native: content.nativeMenuBarIconsEnabled, dark: content.isDarkAppearance),
+                                activity: content.activities[providerId], dark: content.isDarkAppearance))
         }
 
         if let id = content.primaryProviderId, let name = content.accountNames[id] {
@@ -361,7 +368,8 @@ final class StatusItemLabelDriver {
                     text: " | ", color: theme.menuBarStatusColor(for: label.status, darkMenuBar: content.isDarkAppearance)
                 ))
             }
-            parts.append(providerIcon(for: label.providerId, native: content.nativeMenuBarIconsEnabled, dark: content.isDarkAppearance))
+            parts.append(badged(providerIcon(for: label.providerId, native: content.nativeMenuBarIconsEnabled, dark: content.isDarkAppearance),
+                                activity: content.activities[label.providerId], dark: content.isDarkAppearance))
             if let name = content.accountNames[label.providerId] {
                 parts.append(StatusBarPercentageImageRenderer.image(text: name, color: .primary))
             }
@@ -434,6 +442,33 @@ final class StatusItemLabelDriver {
         }
         icon.isTemplate = false
         return icon
+    }
+
+    /// Blue while the agent works, green once it finished.
+    static let workingDot = NSColor(srgbRed: 0.302, green: 0.639, blue: 1.0, alpha: 1)    // #4DA3FF
+    static let finishedDot = NSColor(srgbRed: 0.310, green: 0.890, blue: 0.651, alpha: 1)  // #4FE3A6
+
+    /// The logo with a dot on its top-right corner for an agent that is
+    /// working or has finished; the logo unchanged otherwise. The dot sits in
+    /// a ring of the menu bar's own colour so it reads on any logo.
+    static func badged(_ icon: NSImage, activity: AgentActivity?, dark: Bool) -> NSImage {
+        let colour: NSColor
+        switch activity {
+        case .working: colour = workingDot
+        case .finished: colour = finishedDot
+        case .idle, nil: return icon
+        }
+        let badged = NSImage(size: icon.size, flipped: false) { bounds in
+            icon.draw(in: bounds)
+            let dot = NSRect(x: bounds.maxX - 7, y: bounds.maxY - 7, width: 7, height: 7)
+            (dark ? NSColor.black : NSColor.white).setFill()
+            NSBezierPath(ovalIn: dot.insetBy(dx: -1.25, dy: -1.25)).fill()
+            colour.setFill()
+            NSBezierPath(ovalIn: dot).fill()
+            return true
+        }
+        badged.isTemplate = false
+        return badged
     }
 
     private static func fallbackIconName(for status: QuotaStatus) -> String {

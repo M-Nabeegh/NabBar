@@ -52,6 +52,8 @@ struct NabBarApp: App {
     /// imperatively, outside SwiftUI — the MenuBarExtra label hosting can
     /// permanently stop re-evaluating after system sleep (issue #192).
     private let statusItemDriver: StatusItemLabelDriver
+    /// Whether Claude Code and Codex are working or just finished, from their logs.
+    private let activityMonitor: AgentActivityMonitor
 
     /// Draws Claude Code session and quota state into the notch. Comes up and
     /// goes down with `app.notchEnabled`; does nothing until it is turned on.
@@ -249,10 +251,15 @@ struct NabBarApp: App {
         // The driver owns the menu-bar pixels and the refresh-loop lifecycle
         // (outside SwiftUI — see StatusItemLabelDriver). Pixels start flowing
         // once `.menuBarExtraAccess` hands over the NSStatusItem.
+        let activityMonitor = AgentActivityMonitor()
+        self.activityMonitor = activityMonitor
+        activityMonitor.start()
+
         statusItemDriver = StatusItemLabelDriver(
             monitor: monitor,
             settings: AppSettings.shared,
-            sessionMonitor: sessionMonitor
+            sessionMonitor: sessionMonitor,
+            activityMonitor: activityMonitor
         )
         statusItemDriver.startMonitoringLifecycle()
         statusItemDriver.startAttachLifecycle()
@@ -422,7 +429,11 @@ struct NabBarApp: App {
             // SwiftUI re-evaluate the scene and wipe the AppKit-drawn button
             // image. The dropdown's lifecycle maps 1:1 to those flips, so
             // re-assert the menu-bar pixels on both edges.
-            .onAppear { statusItemDriver.reassertPresentation() }
+            .onAppear {
+                statusItemDriver.reassertPresentation()
+                // Opening the menu means a finished task has been seen.
+                activityMonitor.acknowledge()
+            }
             .onDisappear { statusItemDriver.reassertPresentation() }
         } label: {
             // Deliberately static: the menu-bar pixels are drawn by
