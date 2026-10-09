@@ -34,6 +34,9 @@
 
 - **iPhone.** A Home Screen widget, through the [Notify!](https://getnotifyapp.com) app, with Claude
   and Codex side by side: `Claude 5h · 7d  44 · 80%`.
+- **Working / done dots.** A blue dot on the Claude or Codex logo in the menu bar while it works on
+  a task, a green one when it finishes. Opening the menu clears the green dot. NabBar reads this from
+  the tools' own session logs and changes nothing in them.
 - **Alerts.** A macOS notification when a limit drops into yellow, red or runs out.
 
 It checks every 5 minutes, or when you click Refresh. Claude takes about 3 seconds.
@@ -109,6 +112,9 @@ Reads, never writes:
 
 NabBar never refreshes or rewrites those tokens. When one expires, it tells you to log in again with
 that tool.
+
+- **Activity dots:** the last part of recent session logs in `~/.claude/projects` and
+  `~/.codex/sessions`, for when a task starts and ends.
 
 Writes only its own files: `~/.nabbar` (settings, `status.json`, tiles, history),
 `~/Library/Logs/NabBar/NabBar.log` (never contains tokens), and one key in `~/.claude.json` that
