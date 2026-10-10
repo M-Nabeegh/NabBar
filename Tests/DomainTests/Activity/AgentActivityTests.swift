@@ -135,4 +135,21 @@ struct AgentActivityTests {
     func `a finish older than two hours is dropped`() {
         #expect(AgentActivity.combined([(.finished(at: t0), t0)], now: t0.addingTimeInterval(121 * 60), acknowledgedAt: nil) == .idle)
     }
+
+    // MARK: - Finding Codex's logs
+
+    @Test
+    @MainActor
+    func `a resumed Codex conversation is found in the folder of the day it started`() throws {
+        let home = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: home) }
+        let old = home.appendingPathComponent(".codex/sessions/2026/09/23", isDirectory: true)
+        try FileManager.default.createDirectory(at: old, withIntermediateDirectories: true)
+        let rollout = old.appendingPathComponent("rollout-2026-09-23T21-13-17.jsonl")
+        try Data("{}".utf8).write(to: rollout)
+
+        let found = AgentActivityMonitor.codexLogs(home: home)
+
+        #expect(found.map(\.lastPathComponent) == ["rollout-2026-09-23T21-13-17.jsonl"])
+    }
 }

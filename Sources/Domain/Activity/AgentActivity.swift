@@ -168,15 +168,15 @@ public final class AgentActivityMonitor {
         return folders.flatMap { jsonl(in: $0) }
     }
 
-    nonisolated private static func codexLogs(home: URL) -> [URL] {
+    /// Every rollout under `~/.codex/sessions`. Not just today's folder: a
+    /// resumed conversation keeps writing to its file in the folder of the day
+    /// it started. Only modification dates are read here.
+    nonisolated static func codexLogs(home: URL) -> [URL] {
         let sessions = home.appendingPathComponent(".codex/sessions", isDirectory: true)
-        let calendar = Calendar.current
-        return [0, -1].flatMap { offset -> [URL] in
-            guard let day = calendar.date(byAdding: .day, value: offset, to: Date()) else { return [] }
-            let parts = calendar.dateComponents([.year, .month, .day], from: day)
-            let folder = sessions.appendingPathComponent(String(format: "%04d/%02d/%02d", parts.year ?? 0, parts.month ?? 0, parts.day ?? 0))
-            return jsonl(in: folder)
-        }
+        guard let walker = FileManager.default.enumerator(
+            at: sessions, includingPropertiesForKeys: [.contentModificationDateKey], options: [.skipsHiddenFiles]
+        ) else { return [] }
+        return walker.compactMap { $0 as? URL }.filter { $0.pathExtension == "jsonl" }
     }
 
     nonisolated private static func jsonl(in folder: URL) -> [URL] {
