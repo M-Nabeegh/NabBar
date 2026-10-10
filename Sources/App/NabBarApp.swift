@@ -432,6 +432,7 @@ struct NabBarApp: App {
             .onAppear {
                 statusItemDriver.reassertPresentation()
                 // Opening the menu means a finished task has been seen.
+                AppLog.ui.info("Menu appeared (presented: \(isMenuPresented)); finished agent tasks marked seen")
                 activityMonitor.acknowledge()
             }
             .onDisappear { statusItemDriver.reassertPresentation() }
