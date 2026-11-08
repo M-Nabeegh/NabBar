@@ -139,20 +139,54 @@ struct JSONRPCFetcher: Fetching {
         let transport = try makeTransport(call.cli, call.args, Self.environment(call.environment), directory)
         defer { transport.close() }
 
-        let session = RPCSession(transport: transport)
-        for step in call.handshake {
-            if let method = step.request {
-                _ = try await session.request(method, params: step.params)
-            } else if let method = step.notify {
-                try session.notify(method, params: step.params)
+        let call = self.call
+        let message = try await Self.withTimeout(call.timeout, cli: call.cli, onTimeout: { transport.close() }) {
+            let session = RPCSession(transport: transport)
+            for step in call.handshake {
+                if let method = step.request {
+                    _ = try await session.request(method, params: step.params)
+                } else if let method = step.notify {
+                    try session.notify(method, params: step.params)
+                }
             }
-        }
-        var message = try await session.request(call.call, params: call.params)
-        for followUp in call.then {
-            message[followUp.as] = try await session.request(followUp.request, params: followUp.params)
+            var message = try await session.request(call.call, params: call.params)
+            for followUp in call.then {
+                message[followUp.as] = try await session.request(followUp.request, params: followUp.params)
+            }
+            return message
         }
         AppLog.probes.debug("\(call.cli) \(call.call) answered")
         return Response(body: try JSONSerialization.data(withJSONObject: message))
+    }
+
+    /// Runs `work`, but answers no later than `seconds`: then `onTimeout`
+    /// stops the CLI and the caller gets an error straight away. Not a task
+    /// group, which would wait for a read that may never notice the CLI is gone.
+    static func withTimeout(
+        _ seconds: TimeInterval,
+        cli: String,
+        onTimeout: @escaping @Sendable () -> Void,
+        _ work: @escaping @Sendable () async throws -> [String: Any]
+    ) async throws -> [String: Any] {
+        let outcome = OneShot()
+        return try await withCheckedThrowingContinuation { continuation in
+            let worker = Task {
+                do {
+                    let message = try await work()
+                    if outcome.claim() { continuation.resume(returning: UncheckedMessage(message).value) }
+                } catch {
+                    if outcome.claim() { continuation.resume(throwing: error) }
+                }
+            }
+            Task {
+                try? await Task.sleep(for: .seconds(seconds))
+                guard outcome.claim() else { return }
+                AppLog.probes.warning("\(cli) did not answer in \(Int(seconds))s; stopping it")
+                onTimeout()
+                worker.cancel()
+                continuation.resume(throwing: UsageError.executionFailed("\(cli) did not answer in \(Int(seconds)) seconds"))
+            }
+        }
     }
 
     /// The app's environment changed as the call asks, or `nil` to inherit it
@@ -404,4 +438,23 @@ struct FileFetcher: Fetching {
         }
         return Response(body: data)
     }
+}
+
+/// Lets exactly one of two racing tasks resume a continuation.
+private final class OneShot: @unchecked Sendable {
+    private let lock = NSLock()
+    private var claimed = false
+
+    func claim() -> Bool {
+        lock.withLock {
+            defer { claimed = true }
+            return !claimed
+        }
+    }
+}
+
+/// A JSON-RPC message handed across the race; it is not touched concurrently.
+private struct UncheckedMessage: @unchecked Sendable {
+    let value: [String: Any]
+    init(_ value: [String: Any]) { self.value = value }
 }

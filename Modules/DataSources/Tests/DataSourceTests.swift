@@ -221,6 +221,35 @@ struct DataSourceTests {
         #expect(started.directory == CLIWorkingDirectory.resolve())
     }
 
+    @Test
+    func `a json rpc cli that never answers is given up on after its timeout`() async throws {
+        // A Codex app-server that stops answering without exiting used to hold
+        // its provider's refresh forever, and every later refresh waited on it.
+        let transport = SilentTransport()
+        let definition = try decode("""
+        {"kind":"rpc","fetch":{"jsonRpc":{"cli":"codex","args":["app-server"],"call":"read","timeout":1}},
+         "mapping":{"json":{"quotas":[]}}}
+        """)
+        let source = DataSources.make(
+            definition,
+            providerId: "test",
+            cliExecutor: MockCLIExecutor(),
+            network: MockNetworkClient(),
+            makeTransport: { _, _, _, _ in transport },
+            environment: { _ in nil },
+            homeDirectory: FileManager.default.temporaryDirectory,
+            now: { Date() }
+        )
+        let started = Date()
+
+        await #expect(throws: (any Error).self) {
+            _ = try await source.fetchResponse()
+        }
+
+        #expect(Date().timeIntervalSince(started) < 5)
+        #expect(transport.closed)
+    }
+
     // MARK: - The path dialect
 
     @Test
@@ -255,5 +284,33 @@ private final class StartedProcess: @unchecked Sendable {
         self.executable = executable
         self.arguments = arguments
         self.directory = directory
+    }
+}
+
+/// A JSON-RPC peer that accepts everything and never answers, until closed.
+private final class SilentTransport: RPCTransport, @unchecked Sendable {
+    private let lock = NSLock()
+    private var waiting: CheckedContinuation<Data, Error>?
+    private var isClosed = false
+
+    var closed: Bool { lock.withLock { isClosed } }
+
+    func send(_ data: Data) throws {}
+
+    func receive() async throws -> Data {
+        try await withCheckedThrowingContinuation { continuation in
+            lock.withLock {
+                if isClosed { continuation.resume(throwing: CancellationError()) } else { waiting = continuation }
+            }
+        }
+    }
+
+    func close() {
+        let pending: CheckedContinuation<Data, Error>? = lock.withLock {
+            isClosed = true
+            defer { waiting = nil }
+            return waiting
+        }
+        pending?.resume(throwing: CancellationError())
     }
 }

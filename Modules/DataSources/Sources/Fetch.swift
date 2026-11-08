@@ -390,6 +390,9 @@ public struct JSONRPCCall: Sendable, Equatable, Codable {
     public let then: [FollowUp]
     /// Variables to remove from, and add to, the CLI's environment.
     public let environment: ProcessEnvironment
+    /// Seconds the whole exchange may take before the CLI is stopped. A CLI
+    /// that stops answering without exiting must not hold its refresh forever.
+    public let timeout: TimeInterval
 
     public init(
         cli: String,
@@ -399,8 +402,10 @@ public struct JSONRPCCall: Sendable, Equatable, Codable {
         call: String,
         params: JSONValue? = nil,
         then: [FollowUp] = [],
-        environment: ProcessEnvironment = ProcessEnvironment()
+        environment: ProcessEnvironment = ProcessEnvironment(),
+        timeout: TimeInterval = 20
     ) {
+        self.timeout = timeout
         self.cli = cli
         self.args = args
         self.workingDirectory = workingDirectory
@@ -421,6 +426,7 @@ public struct JSONRPCCall: Sendable, Equatable, Codable {
         params = try container.decodeIfPresent(JSONValue.self, forKey: .params)
         then = try container.decodeIfPresent([FollowUp].self, forKey: .then) ?? []
         environment = try container.decodeIfPresent(ProcessEnvironment.self, forKey: .environment) ?? ProcessEnvironment()
+        timeout = try container.decodeIfPresent(TimeInterval.self, forKey: .timeout) ?? 20
     }
 }
 
