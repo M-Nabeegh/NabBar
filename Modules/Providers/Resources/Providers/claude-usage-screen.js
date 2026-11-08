@@ -38,6 +38,11 @@ function read(response, context) {
       // really a subscription the CLI misread (#271/#317).
       return { error: subscriptionBilled ? { executionFailed: SUBSCRIPTION_MISREAD } : "subscriptionRequired" };
     }
+    if (lower.indexOf("total cost:") !== -1) {
+      // The Usage tab opened but carries no plan bars: the CLI is logged out
+      // (Claude Code 2.1.x shows only the session's cost then).
+      return { error: { executionFailed: "Claude Code showed no plan usage. It is probably logged out: run `claude auth login`." } };
+    }
     return { error: { parseFailed: "Could not find session usage" } };
   }
 

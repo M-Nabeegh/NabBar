@@ -380,6 +380,29 @@ struct ClaudeUsageScreenTests {
         #expect(snapshot.sessionQuota?.percentRemaining == 65)
     }
 
+    // Claude Code 2.1.x after a logout: setup is done, so it opens the Usage
+    // tab, but shows only the session's cost and no plan bars.
+    static let loggedOutUsageTab = """
+       Settings  Status   Config   Usage   Stats
+       Session
+       Total cost:            $0.0000
+       Total duration (API):  0s
+       Total duration (wall): 0s
+       Total code changes:    0 lines added, 0 lines removed
+       Usage:                 0 input, 0 output, 0 cache read, 0 cache write
+       Esc to cancel
+    """
+
+    @Test
+    func `a usage tab without plan bars says to log in`() {
+        do {
+            _ = try read(Self.loggedOutUsageTab)
+            Issue.record("expected an error")
+        } catch {
+            #expect(error.localizedDescription.contains("claude auth login"))
+        }
+    }
+
     @Test
     func `detects authentication error and throws error`() {
         #expect(throws: UsageError.authenticationRequired) {
