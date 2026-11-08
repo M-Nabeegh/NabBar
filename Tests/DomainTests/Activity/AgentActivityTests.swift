@@ -152,4 +152,21 @@ struct AgentActivityTests {
 
         #expect(found.map(\.lastPathComponent) == ["rollout-2026-09-23T21-13-17.jsonl"])
     }
+
+    @Test
+    func `an unchanged log is not read again`() throws {
+        let folder = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: folder) }
+        let log = folder.appendingPathComponent("rollout.jsonl")
+        try Data(#"{"timestamp":"2026-10-09T13:30:00Z","type":"event_msg","payload":{"type":"task_started"}}"#.utf8).write(to: log)
+        let cache = ParsedLogs()
+
+        let first = AgentActivityMonitor.read([log], with: AgentLog.codex, cache: cache)
+        let second = AgentActivityMonitor.read([log], with: AgentLog.codex, cache: cache)
+
+        #expect(first.map(\.activity) == [.working])
+        #expect(second.map(\.activity) == [.working])
+        #expect(cache.reads == 1)
+    }
 }

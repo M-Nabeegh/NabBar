@@ -113,6 +113,8 @@ public final class AgentActivityMonitor {
     private var acknowledgedAt: [String: Date] = [:]
     private var task: Task<Void, Never>?
     private let home: URL
+    /// Each log's last answer, kept while its date and size stay the same.
+    private let parsed = ParsedLogs()
 
     public init(home: URL = FileManager.default.homeDirectoryForCurrentUser) {
         self.home = home
@@ -145,9 +147,10 @@ public final class AgentActivityMonitor {
 
     private func poll() async {
         let home = self.home
+        let parsed = self.parsed
         let sessions = await Task.detached(priority: .utility) {
-            (claude: Self.read(Self.claudeLogs(home: home), with: AgentLog.claude),
-             codex: Self.read(Self.codexLogs(home: home), with: AgentLog.codex))
+            (claude: Self.read(Self.claudeLogs(home: home), with: AgentLog.claude, cache: parsed),
+             codex: Self.read(Self.codexLogs(home: home), with: AgentLog.codex, cache: parsed))
         }.value
         let now = Date()
         let next = [
@@ -184,16 +187,22 @@ public final class AgentActivityMonitor {
         return files.filter { $0.pathExtension == "jsonl" }
     }
 
-    nonisolated private static func read(
+    nonisolated static func read(
         _ files: [URL],
-        with parse: (String) -> AgentActivity
+        with parse: (String) -> AgentActivity,
+        cache: ParsedLogs
     ) -> [(activity: AgentActivity, modifiedAt: Date)] {
         let cutoff = Date().addingTimeInterval(-window)
         return files.compactMap { file in
-            guard let modified = (try? file.resourceValues(forKeys: [.contentModificationDateKey]))?.contentModificationDate,
-                  modified > cutoff,
-                  let tail = tail(of: file) else { return nil }
-            return (parse(tail), modified)
+            guard let values = try? file.resourceValues(forKeys: [.contentModificationDateKey, .fileSizeKey]),
+                  let modified = values.contentModificationDate,
+                  modified > cutoff else { return nil }
+            let stamp = ParsedLogs.Stamp(modified: modified, size: values.fileSize ?? 0)
+            if let known = cache.activity(for: file.path, at: stamp) { return (known, modified) }
+            guard let tail = tail(of: file) else { return nil }
+            let activity = parse(tail)
+            cache.store(activity, for: file.path, at: stamp)
+            return (activity, modified)
         }
     }
 
@@ -204,5 +213,32 @@ public final class AgentActivityMonitor {
         try? handle.seek(toOffset: size > UInt64(tailBytes) ? size - UInt64(tailBytes) : 0)
         guard let data = try? handle.readToEnd() else { return nil }
         return String(decoding: data, as: UTF8.self)
+    }
+}
+
+/// The answer last read from each log, with the date and size it was read at.
+/// A log that has not changed since is not read again.
+public final class ParsedLogs: @unchecked Sendable {
+    struct Stamp: Equatable {
+        let modified: Date
+        let size: Int
+    }
+
+    private let lock = NSLock()
+    private var entries: [String: (stamp: Stamp, activity: AgentActivity)] = [:]
+    /// How many logs were actually read; for tests.
+    private(set) var reads = 0
+
+    public init() {}
+
+    func activity(for path: String, at stamp: Stamp) -> AgentActivity? {
+        lock.withLock { entries[path].flatMap { $0.stamp == stamp ? $0.activity : nil } }
+    }
+
+    func store(_ activity: AgentActivity, for path: String, at stamp: Stamp) {
+        lock.withLock {
+            entries[path] = (stamp, activity)
+            reads += 1
+        }
     }
 }
