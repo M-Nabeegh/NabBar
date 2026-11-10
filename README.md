@@ -52,6 +52,9 @@ It checks every 5 minutes, or when you click Refresh. Claude takes about 3 secon
 
 Needs macOS 15 or later on Apple silicon.
 
+Or with Homebrew: `brew tap m-nabeegh/tap`, then `brew install --cask nabbar` (newer Homebrew asks you
+to run `brew trust m-nabeegh/tap` first). Step 2 above still applies.
+
 ## Set up each tool
 
 NabBar reads usage from the tools you already use. It never logs in for you and never changes their
