@@ -130,7 +130,7 @@ Text("Hello")
 | Light | `light` | Soft purple-pink tones for bright environments |
 | CLI | `cli` | Minimalistic terminal aesthetic with green accents |
 | Christmas | `christmas` | Festive red/green/gold with snowfall |
-| Pop | `pop` | Cream dotted paper, 2.5 pt ink outlines, hard offset shadows, candy status colours, Lilita One numbers ([concept](../../design-concept/claudebar-pop-theme.html)) |
+| Pop | `pop` | Cream dotted paper, 2.5 pt ink outlines, hard offset shadows, candy status colours, Lilita One numbers |
 | System | `system` | Follows macOS appearance (resolves to Light or Dark) |
 
 ## Creating a New Theme

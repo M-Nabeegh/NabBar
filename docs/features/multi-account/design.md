@@ -337,9 +337,7 @@ Menu bar  → MenuBarAccountName.names(displayNames)                 App — sho
 
 ### 3.5 · The screens
 
-The look is
-[`multi-account-ui-design-v1.html`](../../../design-concept/multi-account/multi-account-ui-design-v1.html).
-Below, each part of it is mapped to the model. Where the concept and the
+Below, each part of the design is mapped to the model. Where the concept and the
 model disagree, the decision and its reason are in §8.
 
 **Popover: one provider, all its accounts at once.**

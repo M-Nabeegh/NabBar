@@ -212,7 +212,7 @@ Two deadlines, both two hours, both measured from the last write, and one heartb
 
 ## Architecture
 
-Notify! is a **destination**, not a provider. `QuotaMonitor` remains the single source of truth per `AGENTS.md`, and nothing in this feature reads a quota from anywhere: it reads the ones already in memory. See [docs/architecture/ARCHITECTURE.md](../../architecture/ARCHITECTURE.md) for the layering this sits inside.
+Notify! is a **destination**, not a provider. `QuotaMonitor` remains the single source of truth per the architecture, and nothing in this feature reads a quota from anywhere: it reads the ones already in memory. See [docs/architecture/ARCHITECTURE.md](../../architecture/ARCHITECTURE.md) for the layering this sits inside.
 
 Domain holds every decision as pure value types: the device link and its kind, the field limits, the tile and gauge content, the payload builder, the publish gate and the error cases, plus the `@Mockable` `NotifyPublishing` port. Infrastructure has one implementation, `NotifyGatewayClient`. The App layer owns `NotifyPublishDriver`, `QuotaMonitor+NotifyReadings` and `NotifyPane`.
 

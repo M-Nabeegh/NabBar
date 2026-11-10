@@ -43,7 +43,7 @@ Start with the [README](../README.md). Something broken? See [troubleshooting](t
 
 {table("features")}
 
-Guides: [troubleshooting](troubleshooting.md) · [settings](settings.md) · [architecture](architecture/ARCHITECTURE.md) · [contributing](../CONTRIBUTING.md) · [documentation design](documentation-design/README.md)
+Guides: [troubleshooting](troubleshooting.md) · [settings](settings.md) · [architecture](architecture/ARCHITECTURE.md) · [contributing](../CONTRIBUTING.md)
 """
 
 

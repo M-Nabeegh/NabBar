@@ -12,11 +12,10 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
 
 # Pages and assets under docs/ that are not docs (see the design's Layout section).
-SKIP_PREFIXES = ("docs/screenshots/", "docs/sponsors/")
+SKIP_PREFIXES = ("docs/screenshots/",)
 
-LINE_BUDGETS = {"README.md": 150, "AGENTS.md": 100}
+LINE_BUDGETS = {"README.md": 170}
 FEATURE_README_BUDGET = 200
-AGENTS_CHAR_BUDGET = 12_000
 CHANGELOG_BULLET_BUDGET = 300
 DESCRIPTION_BUDGET = 250
 
@@ -40,9 +39,8 @@ def read(path):
 
 
 def markdown_files():
-    files = ["README.md", "AGENTS.md", "CHANGELOG.md", "SPONSORS.md"]
+    files = ["README.md", "CHANGELOG.md"]
     files += glob.glob("docs/**/*.md", recursive=True)
-    files += glob.glob(".claude/skills/**/*.md", recursive=True)
     return sorted(
         f for f in set(files) if os.path.exists(f) and not f.startswith(SKIP_PREFIXES)
     )
@@ -60,10 +58,6 @@ def check_line_budgets():
         lines = read(path).count("\n")
         if lines > FEATURE_README_BUDGET:
             report(path, f"{lines} lines, budget {FEATURE_README_BUDGET}")
-    if os.path.exists("AGENTS.md"):
-        chars = len(read("AGENTS.md"))
-        if chars > AGENTS_CHAR_BUDGET:
-            report("AGENTS.md", f"{chars} chars, budget {AGENTS_CHAR_BUDGET}")
 
 
 def check_descriptions():

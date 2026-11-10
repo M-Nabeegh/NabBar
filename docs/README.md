@@ -45,4 +45,4 @@ Start with the [README](../README.md). Something broken? See [troubleshooting](t
 | [touch-bar](features/touch-bar/README.md) | Show live quota gauges on a MacBook Pro Touch Bar in every app, or feed BetterTouchTool, MTMR and scripts from ~/.claudebar/status.json. Use on Touch Bar Macs or when wiring quota into another tool. |
 | [url-schemes](features/url-schemes/README.md) | Drive ClaudeBar from Raycast, Alfred, Shortcuts, BetterTouchTool or a terminal with claudebar://open, claudebar://refresh and claudebar://settings. Use when scripting ClaudeBar. |
 
-Guides: [troubleshooting](troubleshooting.md) · [settings](settings.md) · [architecture](architecture/ARCHITECTURE.md) · [contributing](../CONTRIBUTING.md) · [documentation design](documentation-design/README.md)
+Guides: [troubleshooting](troubleshooting.md) · [settings](settings.md) · [architecture](architecture/ARCHITECTURE.md) · [contributing](../CONTRIBUTING.md)

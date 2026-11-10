@@ -248,8 +248,6 @@ Sources/
 ## Adding New Features
 
 For implementation guidance, see:
-- [implement-feature skill](../../.claude/skills/implement-feature/SKILL.md) - TDD workflow
-- [add-provider skill](../../.claude/skills/add-provider/SKILL.md) - Adding AI providers
 
 ## Testing Strategy
 
